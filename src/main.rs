@@ -1,9 +1,10 @@
 mod jobs;
+mod database;
+mod static_files;
 
 use actix_web::{web, App, HttpServer, middleware};
-
-mod database;
 use database::*;
+use static_files::*;
 use std::sync::Mutex;
 
 use crate::jobs::handlers::job_routes;
@@ -19,6 +20,7 @@ async fn main() {
             .app_data(db.clone())
             .wrap(middleware::NormalizePath::trim())
             .configure(job_routes)
+            .configure(static_files)
     })
     .bind(addr)
     .unwrap()

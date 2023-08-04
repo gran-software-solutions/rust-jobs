@@ -1,4 +1,4 @@
-use actix_web::{Responder, HttpResponse, get, web, post};
+use actix_web::{Responder, HttpResponse, get, web::{self, Redirect}, post};
 use sailfish::TemplateOnce;
 
 #[derive(TemplateOnce)]
@@ -17,8 +17,14 @@ impl SignupTemplate {
     }
 }
 
+#[derive(TemplateOnce)]
+#[template(path = "login.stpl")]
+struct LoginTemplate {
+    title: String,
+}
+
 #[post("/signup")]
-async fn signup_process_form() -> impl Responder {
+async fn process_signup_form() -> impl Responder {
     HttpResponse::Ok()
     .body(
         SignupTemplate::new("Sign Up!", true)
@@ -37,9 +43,26 @@ async fn signup_form() -> impl Responder {
     )
 }
 
+#[get("/login")]
+async fn login_form() -> impl Responder {
+    HttpResponse::Ok()
+    .body(
+        LoginTemplate { title: String::from("Login") }
+        .render_once()
+        .unwrap()
+    )
+}
+
+#[post("/login")]
+async fn process_login_form() -> impl Responder {
+    Redirect::to("/").see_other()
+}
+
 pub fn signup(cfg: &mut web::ServiceConfig) {
     cfg
     .service(signup_form)
-    .service(signup_process_form)
+    .service(process_signup_form)
+    .service(login_form)
+    .service(process_login_form)
     ;
 }

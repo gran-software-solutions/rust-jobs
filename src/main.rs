@@ -1,11 +1,12 @@
 mod jobs;
 
 use actix_web::{web, App, HttpServer};
-use jobs::handlers::{homepage, job_details};
 
 mod database;
 use database::*;
 use std::sync::Mutex;
+
+use crate::jobs::handlers::job_routes;
 
 #[actix_web::main]
 async fn main() {
@@ -16,8 +17,7 @@ async fn main() {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(db.clone())
-            .route("/", web::get().to(homepage))
-            .route("/jobs/{job_id}", web::get().to(job_details))
+            .configure(job_routes)
     })
     .bind(addr)
     .unwrap()

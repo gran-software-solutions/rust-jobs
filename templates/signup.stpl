@@ -1,0 +1,13 @@
+<html>
+  <% include!("./head.stpl"); %>
+  <body>
+    <% include!("./navbar.stpl"); %>
+
+    <form>
+    <input placeholder="email" />
+    <input type="password"/>
+    <input type="password"/>
+    <button>Sign Up!</button>
+    </form>
+  </body>
+</html>

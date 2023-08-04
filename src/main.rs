@@ -1,9 +1,12 @@
 mod jobs;
-
-use actix_web::{web, App, HttpServer};
-
 mod database;
+mod static_files;
+mod k8s_probes;
+
+use actix_web::{web, App, HttpServer, middleware};
 use database::*;
+use static_files::*;
+use k8s_probes::*;
 use std::sync::Mutex;
 
 use crate::jobs::handlers::job_routes;
@@ -17,7 +20,8 @@ async fn main() {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(db.clone())
-            .configure(job_routes)
+            .wrap(middleware::NormalizePath::trim())
+            .configure(routes)
     })
     .bind(addr)
     .unwrap()
@@ -25,4 +29,11 @@ async fn main() {
 
     println!("Server live at http://{}", addr);
     server.await.unwrap();
+}
+
+fn routes(cfg: &mut web::ServiceConfig) {
+    cfg
+    .configure(static_files)
+    .configure(job_routes)
+    .configure(k8s_probes);
 }

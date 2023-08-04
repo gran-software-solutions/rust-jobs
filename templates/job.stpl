@@ -1,7 +1,5 @@
 <html>
-  <head>
-    <title>Rust job: <%= job.title %></title>
-  </head>
+  <% include!("./head.stpl"); %>
   <body>
     <% include!("./navbar.stpl"); %>
 

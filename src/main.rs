@@ -1,7 +1,7 @@
 mod jobs;
 
 use actix_web::{web, App, HttpServer};
-use jobs::{homepage, job_details};
+use jobs::handlers::{homepage, job_details};
 
 mod database;
 use database::*;

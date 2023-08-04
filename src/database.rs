@@ -1,4 +1,4 @@
-use crate::jobs::Job;
+use crate::jobs::structs::Job;
 
 use uuid::Uuid;
 

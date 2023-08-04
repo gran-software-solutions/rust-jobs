@@ -1,5 +1,7 @@
-use crate::Job;
+use crate::jobs::Job;
+
 use uuid::Uuid;
+
 pub struct Db {
     pub jobs: Vec<Job>,
 }

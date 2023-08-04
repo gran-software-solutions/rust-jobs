@@ -1,6 +1,6 @@
 mod jobs;
 
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, App, HttpServer, middleware};
 
 mod database;
 use database::*;
@@ -17,6 +17,7 @@ async fn main() {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(db.clone())
+            .wrap(middleware::NormalizePath::trim())
             .configure(job_routes)
     })
     .bind(addr)

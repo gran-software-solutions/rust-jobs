@@ -3,7 +3,6 @@
   <body>
     <% include!("./navbar.stpl"); %>
 
-
     <% if signedup { %>
         <p>Thank you for signing up!</p>
     <% } else { %>

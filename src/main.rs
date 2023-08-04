@@ -1,4 +1,5 @@
 mod jobs;
+mod signup;
 mod database;
 mod static_files;
 mod k8s_probes;
@@ -7,6 +8,7 @@ use actix_web::{web, App, HttpServer, middleware};
 use database::*;
 use static_files::*;
 use k8s_probes::*;
+use signup::*;
 use std::sync::Mutex;
 
 use crate::jobs::handlers::job_routes;
@@ -35,5 +37,7 @@ fn routes(cfg: &mut web::ServiceConfig) {
     cfg
     .configure(static_files)
     .configure(job_routes)
-    .configure(k8s_probes);
+    .configure(k8s_probes)
+    .configure(signup)
+    ;
 }

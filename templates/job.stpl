@@ -1,0 +1,10 @@
+<html>
+  <head>
+    <title>Rust job: <%= job.title %></title>
+  </head>
+  <body>
+    <% include!("./navbar.stpl"); %>
+
+    <h1>Rust job <%= job.title %></h1>
+  </body>
+</html>

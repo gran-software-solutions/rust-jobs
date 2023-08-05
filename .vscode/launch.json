@@ -1,0 +1,54 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'rust-jobs'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust-jobs",
+                    "--package=rust-jobs"
+                ],
+                "filter": {
+                    "name": "rust-jobs",
+                    "kind": "bin"
+                }
+            },
+            "env": {
+                "RUST_LOG": "debug",
+                "SURREALDB_HOST": "localhost",
+                "SURREALDB_PORT": "8000",
+                "SURREALDB_USERNAME": "surreal",
+                "SURREALDB_PASSWORD": "surreal",
+                "SURREALDB_NAMESPACE": "apps",
+                "SURREALDB_DATABASE": "rust_jobs"
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'rust-jobs'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=rust-jobs",
+                    "--package=rust-jobs"
+                ],
+                "filter": {
+                    "name": "rust-jobs",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

@@ -6,13 +6,17 @@ mod static_files;
 
 use std::io::{Error, ErrorKind};
 
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{
+    middleware,
+    web::{self, Data},
+    App, HttpServer,
+};
 use database::*;
 use k8s_probes::*;
 use log::error;
 use signup::*;
 use static_files::*;
-use surrealdb::{engine::remote::ws::Ws, opt::auth::Database, Surreal};
+use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::jobs::handlers::job_routes;
 
@@ -31,19 +35,20 @@ async fn main() -> std::io::Result<()> {
             return Err(Error::new(ErrorKind::Other, "Could not connect to db!"));
         }
     };
-    db_client.signin(Database {
-        namespace: &db_conf.namespace,
-        database: &db_conf.database,
-        username: &db_conf.username,
-        password: &db_conf.password,
-    });
-    db_client
+    let _ = db_client
+        .signin(Root {
+            username: &db_conf.username,
+            password: &db_conf.password,
+        })
+        .await;
+    let _ = db_client
         .use_ns(&db_conf.namespace)
-        .use_db(&db_conf.database);
+        .use_db(&db_conf.database)
+        .await;
 
     let server = HttpServer::new(move || {
         App::new()
-            .app_data(db_client.clone())
+            .app_data(Data::new(db_client.clone()))
             .wrap(middleware::NormalizePath::trim())
             .configure(routes)
     })

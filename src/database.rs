@@ -1,5 +1,8 @@
 use std::env;
 
+use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
+
 const DEFAULT_DB_NAME: &str = "rust_jobs";
 const ENV_VAR_DB_HOST: &str = "SURREALDB_HOST";
 const ENV_VAR_DB_PORT: &str = "SURREALDB_PORT";
@@ -17,6 +20,12 @@ pub struct SurrealdbConfig {
     pub password: String,
     pub namespace: String,
     pub database: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SurrealJob {
+    pub id: Thing,
+    pub title: String,
 }
 
 impl SurrealdbConfig {

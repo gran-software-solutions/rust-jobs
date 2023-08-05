@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "RUST JOBS RUNNER",
+			"type": "shell",
+			"command": "cargo",
+			"options": {
+				"env": {
+					"RUST_LOG": "backend=info",
+					"SURREALDB_HOST": "localhost",
+					"SURREALDB_PORT": "8000",
+					"SURREALDB_USERNAME": "surreal",
+					"SURREALDB_PASSWORD": "surreal",
+					"SURREALDB_NAMESPACE": "apps",
+					"SURREALDB_DATABASE": "rust_jobs"
+				}
+			},
+			"args": [
+				"watch",
+				"-x",
+				"run"
+			]
+		}
+	]
+}

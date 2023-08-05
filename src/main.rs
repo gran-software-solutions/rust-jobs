@@ -4,44 +4,46 @@ mod k8s_probes;
 mod signup;
 mod static_files;
 
-use actix_web::web;
+use std::io::{Error, ErrorKind};
+
+use actix_web::{middleware, web, App, HttpServer};
 use database::*;
 use k8s_probes::*;
+use log::error;
 use signup::*;
 use static_files::*;
-use surrealdb::{engine::remote::ws::Ws, Surreal, opt::auth::Root};
-use std::env;
+use surrealdb::{engine::remote::ws::Ws, opt::auth::Database, Surreal};
 
 use crate::jobs::handlers::job_routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init();
+
     let addr = "localhost:8080";
 
-    let surrealdb_config = SurrealdbConfig::new();
+    let db_conf = SurrealdbConfig::new();
 
-
-    let storage = match Surreal::new::<Ws>(format!("{}:{}", surrealdb_config.host, surrealdb_config.port)).await {
+    let db_client = match Surreal::new::<Ws>(format!("{}:{}", db_conf.host, db_conf.port)).await {
         Ok(client) => client,
-        Err(e) => return Err(std::io::Error::new(std::io::ErrorKind::Other, "Could not connect to db!")),
+        Err(e) => {
+            error!("Could not initialize db client {}", e);
+            return Err(Error::new(ErrorKind::Other, "Could not connect to db!"));
+        }
     };
-    storage.signin(Root{
-        username: &surrealdb_config.username,
-        password: &surrealdb_config.password,
+    db_client.signin(Database {
+        namespace: &db_conf.namespace,
+        database: &db_conf.database,
+        username: &db_conf.username,
+        password: &db_conf.password,
     });
-
-    if let Ok(ns) = env::var("SURREALDB_NAMESPACE") {
-        storage.use_ns(ns);
-    }
-
-    storage.use_db(surrealdb_config.database);
-
-
-    let db = web::Data::new(Mutex::new(Db::new()));
+    db_client
+        .use_ns(&db_conf.namespace)
+        .use_db(&db_conf.database);
 
     let server = HttpServer::new(move || {
         App::new()
-            .app_data(db.clone())
+            .app_data(db_client.clone())
             .wrap(middleware::NormalizePath::trim())
             .configure(routes)
     })

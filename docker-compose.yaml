@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  surrealdb:
+    env_file:
+      - .env
+    entrypoint: 
+      - /surreal 
+      - start 
+      - file:/mydata/rust_jobs.db
+      - --user
+      - surreal
+      - --pass
+      - surreal
+    image: surrealdb/surrealdb:latest
+    volumes:
+      - data-volume:/mydata
+    ports:
+      - 8000:8000
+
+volumes:
+  data-volume:

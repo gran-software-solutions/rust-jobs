@@ -1,4 +1,4 @@
-use crate::jobs::domain::{Employer, Job};
+use crate::jobs::{self, domain::{Employer, Job}};
 
 use uuid::Uuid;
 
@@ -14,14 +14,20 @@ impl Db {
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 1".to_string(),
+                    start: String::from("asap"),
+                    job_type: jobs::domain::JobType::Permanent,
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 2".to_string(),
+                    start: String::from("asap"),
+                    job_type: jobs::domain::JobType::Freelance,
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 3".to_string(),
+                    start: String::from("asap"),
+                    job_type: jobs::domain::JobType::Permanent,
                 },
             ],
             employers: vec![Employer {

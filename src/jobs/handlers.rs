@@ -16,6 +16,8 @@ use crate::{
     presenters::{home_presenter, job_details_presenter, new_job_presenter},
 };
 
+use super::domain::JobType;
+
 #[get("/")]
 async fn homepage(db_mutex: web::Data<Mutex<Db>>) -> impl Responder {
     let db = db_mutex.lock().unwrap();
@@ -41,6 +43,8 @@ async fn new_job_view() -> impl Responder {
 #[derive(Deserialize)]
 struct NewJob {
     title: String,
+    job_type: JobType,
+    start: String,
 }
 
 #[post("/jobs")]
@@ -48,10 +52,11 @@ async fn save_new_job(
     new_job: web::Form<NewJob>,
     db_mutex: web::Data<Mutex<Db>>,
 ) -> impl Responder {
+    let new_job = new_job.into_inner();
     db_mutex
         .lock()
         .unwrap()
-        .add_job(Job::new(new_job.into_inner().title));
+        .add_job(Job::new(new_job.title, new_job.start, new_job.job_type));
     Redirect::to("/").using_status_code(StatusCode::SEE_OTHER)
 }
 

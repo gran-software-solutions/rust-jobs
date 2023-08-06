@@ -30,7 +30,7 @@ impl Job {
             title,
             job_type,
             start,
-            location
+            location,
         }
     }
 }

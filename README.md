@@ -1,5 +1,18 @@
 # rust-jobs
 
+## Configuration
+
+### Environment variables
+
+| Name                | Required? | Default   | Desc                |
+| ------------------- | --------- | --------- | ------------------- |
+| SURREALDB_HOST      | Y         |           | Surrealdb host      |
+| SURREALDB_USERNAME  | Y         |           | Surrealdb user      |
+| SURREALDB_PASSWORD  | Y         |           | Surrealdb pass      |
+| SURREALDB_PORT      | N         | 8000      | Surrealdb port      |
+| SURREALDB_NAMESPACE | N         | apps      | Surrealdb namespace |
+| SURREALDB_DATABASE  | N         | rust_jobs | Surrealdb database  |
+
 ## Running locally
 
 ```bash

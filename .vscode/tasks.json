@@ -21,6 +21,15 @@
 				"-x",
 				"run"
 			]
+		},
+		{
+			"label": "cargo fmt",
+			"type": "shell",
+			"command": "cargo",
+			"args": [
+				"fmt"
+			],
+			"problemMatcher": []
 		}
 	]
 }

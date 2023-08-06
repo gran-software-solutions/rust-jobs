@@ -1,11 +1,19 @@
 use std::sync::Mutex;
 
-use actix_web::{get, web, HttpResponse, Responder};
+use actix_web::{
+    get,
+    http::StatusCode,
+    post,
+    web::{self, Redirect},
+    HttpResponse, Responder,
+};
+use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::{
     database::Db,
-    presenters::{home_presenter, job_details_presenter},
+    jobs::domain::Job,
+    presenters::{home_presenter, job_details_presenter, new_job_presenter},
 };
 
 #[get("/")]
@@ -25,6 +33,31 @@ async fn job_details(id: web::Path<Uuid>, db_mutex: web::Data<Mutex<Db>>) -> imp
     HttpResponse::Ok().body(job_details_presenter(job))
 }
 
+#[get("/jobs/new")]
+async fn new_job_view() -> impl Responder {
+    HttpResponse::Ok().body(new_job_presenter())
+}
+
+#[derive(Deserialize)]
+struct NewJob {
+    title: String,
+}
+
+#[post("/jobs")]
+async fn save_new_job(
+    new_job: web::Form<NewJob>,
+    db_mutex: web::Data<Mutex<Db>>,
+) -> impl Responder {
+    db_mutex
+        .lock()
+        .unwrap()
+        .add(Job::new(new_job.into_inner().title));
+    Redirect::to("/").using_status_code(StatusCode::SEE_OTHER)
+}
+
 pub fn job_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(homepage).service(job_details);
+    cfg.service(homepage)
+        .service(new_job_view)
+        .service(save_new_job)
+        .service(job_details);
 }

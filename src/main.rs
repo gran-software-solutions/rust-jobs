@@ -5,11 +5,7 @@ mod presenters;
 mod signup;
 mod static_files;
 
-use actix_web::{
-    middleware,
-    web,
-    App, HttpServer,
-};
+use actix_web::{middleware, web, App, HttpServer};
 use database::*;
 use k8s_probes::*;
 use signup::*;

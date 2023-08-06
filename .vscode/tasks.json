@@ -24,6 +24,15 @@
 				"fmt"
 			],
 			"problemMatcher": []
+		},
+		{
+			"label": "cargo clean",
+			"type": "shell",
+			"command": "cargo",
+			"args": [
+				"clean"
+			],
+			"problemMatcher": []
 		}
 	]
 }

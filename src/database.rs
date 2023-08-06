@@ -1,4 +1,4 @@
-use crate::jobs::structs::Job;
+use crate::jobs::domain::Job;
 
 use uuid::Uuid;
 
@@ -26,8 +26,8 @@ impl Db {
         }
     }
 
-    pub fn add(&mut self, job: Job) {
-        self.jobs.push(job);
+    pub fn add(&mut self, new_job: Job) {
+        self.jobs.push(new_job);
     }
 
     pub fn delete(&mut self, uuid: Uuid) {

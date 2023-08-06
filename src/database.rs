@@ -16,18 +16,21 @@ impl Db {
                     title: "Title 1".to_string(),
                     start: String::from("asap"),
                     job_type: jobs::domain::JobType::Permanent,
+                    location: jobs::domain::Location::Remote,
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 2".to_string(),
                     start: String::from("asap"),
                     job_type: jobs::domain::JobType::Freelance,
+                    location: jobs::domain::Location::Office,
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 3".to_string(),
                     start: String::from("asap"),
                     job_type: jobs::domain::JobType::Permanent,
+                    location: jobs::domain::Location::Hybrid,
                 },
             ],
             employers: vec![Employer {

@@ -1,6 +1,3 @@
-use std::fmt;
-
-use sailfish::runtime::Render;
 use serde::Deserialize;
 use uuid::Uuid;
 
@@ -10,17 +7,11 @@ pub enum JobType {
     Permanent,
 }
 
-impl fmt::Display for JobType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-
-impl Render for JobType {
-    fn render(&self, b: &mut sailfish::runtime::Buffer) -> Result<(), sailfish::RenderError> {
-        b.push_str(self.to_string().as_str());
-        Ok(())
-    }
+#[derive(Deserialize, Debug, Clone)]
+pub enum Location {
+    Remote,
+    Office,
+    Hybrid,
 }
 
 #[derive(Deserialize, Clone)]
@@ -29,15 +20,17 @@ pub struct Job {
     pub title: String,
     pub start: String,
     pub job_type: JobType,
+    pub location: Location,
 }
 
 impl Job {
-    pub fn new(title: String, start: String, job_type: JobType) -> Self {
+    pub fn new(title: String, start: String, job_type: JobType, location: Location) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
             title,
             job_type,
             start,
+            location
         }
     }
 }

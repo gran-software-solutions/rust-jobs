@@ -17,6 +17,12 @@
     </select><br/>
     <label for="start">Start:</label>
     <input type="text" name="start"><br>
+    <label for="location">Location:</label>
+    <select name="location">
+        <option value="Office">Office</option>
+        <option value="Remote">Remote</option>
+        <option value="Hybrid">Hybrid</option>
+    </select><br/>
     <input type="submit" value="Save Job">
     </fieldset>
     </form>

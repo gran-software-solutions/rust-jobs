@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "rust-jobs run",
+			"type": "shell",
+			"command": "cargo",
+			"options": {
+				"env": {
+					"RUST_LOG": "debug"
+				}
+			},
+			"args": [
+				"watch",
+				"-x",
+				"run"
+			]
+		},
+		{
+			"label": "cargo fmt",
+			"type": "shell",
+			"command": "cargo",
+			"args": [
+				"fmt"
+			],
+			"problemMatcher": []
+		}
+	]
+}

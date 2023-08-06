@@ -1,4 +1,4 @@
-use actix_web::{web, Responder, HttpResponse, get};
+use actix_web::{get, web, HttpResponse, Responder};
 
 #[get("/liveness")]
 async fn liveness() -> impl Responder {
@@ -11,10 +11,7 @@ async fn readiness() -> impl Responder {
 }
 
 pub fn k8s_probes(cfg: &mut web::ServiceConfig) {
-    let scope = web::scope("/probe")
-    .service(liveness)
-    .service(readiness);
+    let scope = web::scope("/probe").service(liveness).service(readiness);
 
-    cfg
-    .service(scope);
+    cfg.service(scope);
 }

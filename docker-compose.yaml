@@ -2,8 +2,6 @@ version: '3'
 
 services:
   surrealdb:
-    env_file:
-      - .env
     entrypoint: 
       - /surreal 
       - start 

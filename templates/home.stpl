@@ -1,13 +1,17 @@
 <html>
-  <% include!("./head.stpl"); %>
+<% include!("./head.stpl"); %>
+
   <body>
     <% include!("./navbar.stpl"); %>
 
-    <h1>Rust jobs</h1>
-    <ol>
-      <% for job in jobs {%>
-        <li><%= job.title %> <a href="/jobs/<%= job.id %>">view</a></li>
-      <% } %>
-    </ol>
+      <h1>Rust jobs</h1>
+      <ol>
+        <% for job in jobs {%>
+          <li>
+            <%= job.title %> <a href="/jobs/<%= job.id %>">view</a>
+          </li>
+          <% } %>
+      </ol>
   </body>
+
 </html>

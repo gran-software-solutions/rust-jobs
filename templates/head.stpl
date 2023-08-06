@@ -1,4 +1,6 @@
-  <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/static/css/style.css" />
-  </head>
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>

@@ -46,6 +46,20 @@ struct NewJob {
     job_type: JobType,
     start: String,
     location: Location,
+    client: String,
+}
+
+impl From<NewJob> for Job {
+    fn from(n: NewJob) -> Self {
+        Self {
+            id: Uuid::new_v4().to_string(),
+            client: n.client,
+            job_type: n.job_type,
+            title: n.title,
+            start: n.start,
+            location: n.location,
+        }
+    }
 }
 
 #[post("/jobs")]
@@ -54,12 +68,7 @@ async fn save_new_job(
     db_mutex: web::Data<Mutex<Db>>,
 ) -> impl Responder {
     let new_job = new_job.into_inner();
-    db_mutex.lock().unwrap().add_job(Job::new(
-        new_job.title,
-        new_job.start,
-        new_job.job_type,
-        new_job.location,
-    ));
+    db_mutex.lock().unwrap().add_job(new_job.into());
     Redirect::to("/").using_status_code(StatusCode::SEE_OTHER)
 }
 

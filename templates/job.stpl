@@ -17,6 +17,8 @@
         <input type="text" name="start" value="<%= job.start %>"><br>
         <label for="location">Location:</label>
         <input type="text" name="location" value="<%= job.location | dbg %>"><br>
+        <label for="client">Client:</label>
+        <input type="text" name="client" value="<%= job.client %>"><br>
       </fieldset>
   </body>
 

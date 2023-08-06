@@ -9,6 +9,7 @@ pub struct Db {
 
 impl Db {
     pub fn new() -> Self {
+        let clients = ["Sony", "Google", "Amazon"];
         Self {
             jobs: vec![
                 Job {
@@ -17,6 +18,7 @@ impl Db {
                     start: String::from("asap"),
                     job_type: jobs::domain::JobType::Permanent,
                     location: jobs::domain::Location::Remote,
+                    client: clients[0].to_string(),
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
@@ -24,6 +26,7 @@ impl Db {
                     start: String::from("asap"),
                     job_type: jobs::domain::JobType::Freelance,
                     location: jobs::domain::Location::Office,
+                    client: clients[1].to_string(),
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
@@ -31,6 +34,7 @@ impl Db {
                     start: String::from("asap"),
                     job_type: jobs::domain::JobType::Permanent,
                     location: jobs::domain::Location::Hybrid,
+                    client: clients[2].to_string(),
                 },
             ],
             employers: vec![Employer {

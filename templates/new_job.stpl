@@ -22,6 +22,8 @@
               <option value="Remote">Remote</option>
               <option value="Hybrid">Hybrid</option>
             </select><br />
+            <label for="client">Client:</label>
+            <input type="text" name="client"><br>
             <input type="submit" value="Save Job">
           </fieldset>
         </form>

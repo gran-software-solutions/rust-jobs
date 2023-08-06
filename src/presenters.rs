@@ -1,7 +1,12 @@
-use crate::jobs::structs::JobDetails;
-
-use super::jobs::structs::{Home, Job};
+use super::jobs::domain::Job;
 use sailfish::TemplateOnce;
+
+#[derive(TemplateOnce)]
+#[template(path = "home.stpl")]
+pub struct Home<'a> {
+    pub title: &'a str,
+    pub jobs: &'a Vec<Job>,
+}
 
 pub fn home_presenter(jobs: &Vec<Job>) -> String {
     Home {
@@ -12,11 +17,26 @@ pub fn home_presenter(jobs: &Vec<Job>) -> String {
     .unwrap()
 }
 
+#[derive(TemplateOnce)]
+#[template(path = "job.stpl")]
+pub struct JobDetails<'a> {
+    pub title: &'a str,
+    pub job: &'a Job,
+}
+
 pub fn job_details_presenter(job: &Job) -> String {
     JobDetails {
         title: &job.title[..],
-        job: job,
+        job,
     }
     .render_once()
     .unwrap()
+}
+
+#[derive(TemplateOnce)]
+#[template(path = "new_job.stpl")]
+pub struct NewJobView;
+
+pub fn new_job_presenter() -> String {
+    NewJobView {}.render_once().unwrap()
 }

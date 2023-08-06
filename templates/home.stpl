@@ -5,13 +5,15 @@
     <% include!("./navbar.stpl"); %>
 
       <h1>Rust jobs</h1>
-      <ol>
-        <% for job in jobs {%>
-          <li>
-            <%= job.title %> <a href="/jobs/<%= job.id %>">view</a>
-          </li>
-          <% } %>
-      </ol>
+      <div>
+        <ol>
+          <% for job in jobs {%>
+            <li>
+              <%= job.title %> <a href="/jobs/<%= job.id %>">view</a>
+            </li>
+            <% } %>
+        </ol>
+      </div>
   </body>
 
 </html>

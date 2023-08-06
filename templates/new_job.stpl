@@ -4,29 +4,31 @@
 
     <body>
       <% include!("./navbar.stpl"); %>
-        <form action="/jobs" method="POST">
-          <fieldset>
-            <legend>Create a new Job:</legend>
-            <label for="title">Title:</label>
-            <input type="text" name="title"><br>
-            <label for="job_type">Type:</label>
-            <select name="job_type">
-              <option value="Permanent">Permanent</option>
-              <option value="Freelance">Freelance</option>
-            </select><br />
-            <label for="start">Start:</label>
-            <input type="text" name="start"><br>
-            <label for="location">Location:</label>
-            <select name="location">
-              <option value="Office">Office</option>
-              <option value="Remote">Remote</option>
-              <option value="Hybrid">Hybrid</option>
-            </select><br />
-            <label for="client">Client:</label>
-            <input type="text" name="client"><br>
-            <input type="submit" value="Save Job">
-          </fieldset>
-        </form>
+        <div>
+          <form action="/jobs" method="POST">
+            <fieldset>
+              <legend>Create a new Job:</legend>
+              <label for="title">Title:</label>
+              <input type="text" name="title"><br>
+              <label for="job_type">Type:</label>
+              <select name="job_type">
+                <option value="Permanent">Permanent</option>
+                <option value="Freelance">Freelance</option>
+              </select><br />
+              <label for="start">Start:</label>
+              <input type="text" name="start"><br>
+              <label for="location">Location:</label>
+              <select name="location">
+                <option value="Office">Office</option>
+                <option value="Remote">Remote</option>
+                <option value="Hybrid">Hybrid</option>
+              </select><br />
+              <label for="client">Client:</label>
+              <input type="text" name="client"><br>
+              <input type="submit" value="Save Job">
+            </fieldset>
+          </form>
+        </div>
     </body>
 
 </html>

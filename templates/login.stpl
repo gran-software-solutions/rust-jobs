@@ -3,15 +3,17 @@
 
   <body>
     <% include!("./navbar.stpl"); %>
-      <form action="/login" method="POST">
-        <label for="email">Email:</label>
-        <input type="text" id="email" /><br />
+      <div>
+        <form action="/login" method="POST">
+          <label for="email">Email:</label>
+          <input type="text" id="email" /><br />
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" /><br />
+          <label for="password">Password:</label>
+          <input type="password" id="password" /><br />
 
-        <input type="submit" value="Login" />
-      </form>
+          <input type="submit" value="Login" />
+        </form>
+      </div>
   </body>
 
 </html>

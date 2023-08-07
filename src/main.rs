@@ -18,7 +18,7 @@ use crate::jobs::handlers::job_routes;
 async fn main() {
     env_logger::init();
 
-    let addr = "localhost:8080";
+    let addr = "0.0.0.0:8080";
 
     let db = web::Data::new(Mutex::new(Db::new()));
 

@@ -1,19 +1,26 @@
 use serde::Deserialize;
-use uuid::Uuid;
+
+#[derive(Deserialize, Debug, Clone)]
+pub enum JobType {
+    Freelance,
+    Permanent,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub enum Location {
+    Remote,
+    Office,
+    Hybrid,
+}
 
 #[derive(Deserialize, Clone)]
 pub struct Job {
     pub id: String,
     pub title: String,
-}
-
-impl Job {
-    pub fn new(title: String) -> Self {
-        Self {
-            id: Uuid::new_v4().to_string(),
-            title,
-        }
-    }
+    pub start: String,
+    pub job_type: JobType,
+    pub location: Location,
+    pub employer: String,
 }
 
 #[derive(Deserialize)]

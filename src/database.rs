@@ -1,4 +1,7 @@
-use crate::jobs::domain::{Employer, Job};
+use crate::jobs::{
+    self,
+    domain::{Employer, Job},
+};
 
 use uuid::Uuid;
 
@@ -9,19 +12,32 @@ pub struct Db {
 
 impl Db {
     pub fn new() -> Self {
+        let employers = ["Sony", "Google", "Amazon"];
         Self {
             jobs: vec![
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 1".to_string(),
+                    start: String::from("asap"),
+                    job_type: jobs::domain::JobType::Permanent,
+                    location: jobs::domain::Location::Remote,
+                    employer: employers[0].to_string(),
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 2".to_string(),
+                    start: String::from("asap"),
+                    job_type: jobs::domain::JobType::Freelance,
+                    location: jobs::domain::Location::Office,
+                    employer: employers[1].to_string(),
                 },
                 Job {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 3".to_string(),
+                    start: String::from("asap"),
+                    job_type: jobs::domain::JobType::Permanent,
+                    location: jobs::domain::Location::Hybrid,
+                    employer: employers[2].to_string(),
                 },
             ],
             employers: vec![Employer {

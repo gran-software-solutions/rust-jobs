@@ -51,7 +51,7 @@ async fn save_new_job(
     db_mutex
         .lock()
         .unwrap()
-        .add(Job::new(new_job.into_inner().title));
+        .add_job(Job::new(new_job.into_inner().title));
     Redirect::to("/").using_status_code(StatusCode::SEE_OTHER)
 }
 

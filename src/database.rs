@@ -1,9 +1,10 @@
-use crate::jobs::domain::Job;
+use crate::jobs::domain::{Employer, Job};
 
 use uuid::Uuid;
 
 pub struct Db {
     pub jobs: Vec<Job>,
+    pub employers: Vec<Employer>,
 }
 
 impl Db {
@@ -23,11 +24,21 @@ impl Db {
                     title: "Title 3".to_string(),
                 },
             ],
+            employers: vec![Employer {
+                id: Uuid::new_v4().to_string(),
+                name: "Microsfot".to_string(),
+                email: "yolo@gransoftware.de".to_string(),
+                password: "secret123".to_string(),
+            }],
         }
     }
 
-    pub fn add(&mut self, new_job: Job) {
+    pub fn add_job(&mut self, new_job: Job) {
         self.jobs.push(new_job);
+    }
+
+    pub fn add_employer<'a>(&mut self, new_employer: Employer) {
+        self.employers.push(new_employer);
     }
 
     pub fn delete(&mut self, uuid: Uuid) {

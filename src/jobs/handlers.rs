@@ -28,9 +28,10 @@ async fn job_details(id: web::Path<Uuid>, db_mutex: web::Data<Mutex<Db>>) -> imp
     let job_id = id.into_inner();
     let db = db_mutex.lock().unwrap();
 
-    let job = db.get_job(job_id).expect("Expected to find a job");
-
-    HttpResponse::Ok().body(job_details_presenter(job))
+    match db.get_job(job_id) {
+        None => HttpResponse::NotFound().finish(),
+        Some(job) => HttpResponse::Ok().body(job_details_presenter(job)),
+    }
 }
 
 #[get("/jobs/new")]

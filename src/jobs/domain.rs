@@ -15,3 +15,11 @@ impl Job {
         }
     }
 }
+
+#[derive(Deserialize)]
+pub struct Employer {
+    pub id: String,
+    pub name: String,
+    pub email: String,
+    pub password: String,
+}

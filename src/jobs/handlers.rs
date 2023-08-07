@@ -1,8 +1,7 @@
 use std::sync::Mutex;
 
 use actix_web::{
-    get,
-    post,
+    get, post,
     web::{self, Redirect},
     HttpResponse, Responder,
 };

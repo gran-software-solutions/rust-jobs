@@ -67,9 +67,9 @@ async fn process_signup_form(
         Err(e) => {
             println!("{:?}", e);
             HttpResponse::SeeOther()
-            .append_header(("location", "/signup"))
-            .append_header(("X-Error", "true")) // TODO read this in /signup
-            .finish()
+                .append_header(("location", "/signup"))
+                .append_header(("X-Error", "true")) // TODO read this in /signup
+                .finish()
         }
     };
 }

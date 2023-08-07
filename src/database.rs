@@ -1,4 +1,7 @@
-use crate::jobs::{self, domain::{Employer, Job}};
+use crate::jobs::{
+    self,
+    domain::{Employer, Job},
+};
 
 use uuid::Uuid;
 

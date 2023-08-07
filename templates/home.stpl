@@ -3,16 +3,22 @@
 
   <body>
     <% include!("./navbar.stpl"); %>
-
       <h1>Rust jobs</h1>
       <div>
+        <% if jobs.is_empty() { %>
+        <h2>No jobs found</h2>
+        <% } else { %>
         <ol>
           <% for job in jobs {%>
             <li>
-              <%= job.title %> <a href="/jobs/<%= job.id %>">view</a>
+              <form method="post" action="/jobs/<%= job.id %>">
+                <input type="hidden" name="job_mutation" value="DELETE">
+                <%= job.title %> <a href="/jobs/<%= job.id %>" title="View job details"><i class="fa-regular fa-eye"></i></a> <a href=“#” title="Delete job" onclick="this.closest('form').submit(); return false;"><i class="fa-regular fa-trash-can"></i></a>
+              </form>
             </li>
             <% } %>
         </ol>
+        <% } %>
       </div>
   </body>
 

@@ -61,3 +61,8 @@ div {
     background-color: #4CAF50;
     color: white;
 }
+
+.fa-eye, .fa-trash-can {
+    color: black;
+    margin-left: 5px;
+}

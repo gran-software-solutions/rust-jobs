@@ -58,7 +58,7 @@ impl Db {
     }
 
     pub fn delete(&mut self, uuid: Uuid) {
-        self.jobs.retain(|j| j.id == uuid.to_string());
+        self.jobs.retain(|j| j.id != uuid.to_string());
     }
 
     pub fn get_all(&self) -> &Vec<Job> {

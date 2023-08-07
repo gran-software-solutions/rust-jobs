@@ -7,6 +7,7 @@ mod static_files;
 
 use actix_web::{middleware, web, App, HttpServer};
 use database::*;
+use env_logger::Env;
 use k8s_probes::*;
 use signup::*;
 use static_files::*;
@@ -16,7 +17,7 @@ use crate::jobs::handlers::job_routes;
 
 #[actix_web::main]
 async fn main() {
-    env_logger::init();
+    env_logger::init_from_env(Env::default().default_filter_or("info"));
 
     let addr = "0.0.0.0:8080";
 

@@ -24,6 +24,12 @@ pub struct JobDetails<'a> {
     pub job: &'a Job,
 }
 
+#[derive(TemplateOnce)]
+#[template(path = "notfound.stpl")]
+pub struct NotFound<'a> {
+    pub message: &'a str,
+}
+
 pub fn job_details_presenter(job: &Job) -> String {
     JobDetails {
         title: &job.title[..],
@@ -31,6 +37,10 @@ pub fn job_details_presenter(job: &Job) -> String {
     }
     .render_once()
     .unwrap()
+}
+
+pub fn not_found(message: String) -> String {
+    NotFound { message: &message }.render_once().unwrap()
 }
 
 #[derive(TemplateOnce)]

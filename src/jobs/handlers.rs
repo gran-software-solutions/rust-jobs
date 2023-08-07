@@ -11,7 +11,7 @@ use uuid::Uuid;
 use crate::{
     database::Db,
     jobs::domain::Job,
-    presenters::{home_presenter, job_details_presenter, new_job_presenter},
+    presenters::{home_presenter, job_details_presenter, new_job_presenter, not_found},
 };
 
 use super::domain::{JobType, Location};
@@ -28,9 +28,12 @@ async fn job_details(id: web::Path<Uuid>, db_mutex: web::Data<Mutex<Db>>) -> imp
     let job_id = id.into_inner();
     let db = db_mutex.lock().unwrap();
 
-    let job = db.get_job(job_id).expect("Expected to find a job");
-
-    HttpResponse::Ok().body(job_details_presenter(job))
+    match db.get_job(job_id) {
+        None => {
+            HttpResponse::NotFound().body(not_found(format!("Job with id {} not found", job_id)))
+        }
+        Some(job) => HttpResponse::Ok().body(job_details_presenter(job)),
+    }
 }
 
 #[get("/jobs/new")]

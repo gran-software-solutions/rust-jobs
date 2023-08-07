@@ -1,0 +1,13 @@
+<html>
+<% let title="Ooooops - 404!" ; %>
+<% include!("./head.stpl"); %>
+
+<body>
+
+<% include!("./navbar.stpl"); %>
+<div>
+    <%= message %>
+</div>
+</body>
+
+</html>

@@ -2,7 +2,6 @@ use std::sync::Mutex;
 
 use actix_web::{
     get,
-    http::StatusCode,
     post,
     web::{self, Redirect},
     HttpResponse, Responder,
@@ -46,14 +45,14 @@ struct NewJob {
     job_type: JobType,
     start: String,
     location: Location,
-    client: String,
+    employer: String,
 }
 
 impl From<NewJob> for Job {
     fn from(n: NewJob) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
-            client: n.client,
+            employer: n.employer,
             job_type: n.job_type,
             title: n.title,
             start: n.start,
@@ -69,7 +68,7 @@ async fn save_new_job(
 ) -> impl Responder {
     let new_job = new_job.into_inner();
     db_mutex.lock().unwrap().add_job(new_job.into());
-    Redirect::to("/").using_status_code(StatusCode::SEE_OTHER)
+    Redirect::to("/").see_other()
 }
 
 pub fn job_routes(cfg: &mut web::ServiceConfig) {

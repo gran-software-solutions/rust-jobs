@@ -1,24 +1,17 @@
 nav {
     display: flex;
-    /* 1 */
     justify-content: space-between;
-    /* 2 */
     padding: 1rem 2rem;
-    /* 3 */
     background: #4CAF50;
-    /* 4 */
 }
 
 nav ul {
     display: flex;
-    /* 5 */
     list-style: none;
-    /* 6 */
 }
 
 nav li {
     padding-left: 1rem;
-    /* 7! */
 }
 
 nav a {
@@ -57,4 +50,14 @@ div {
     border-radius: 5px;
     background-color: #f2f2f2;
     padding: 20px;
+}
+
+#job tr td {
+    padding: 5px;
+}
+
+#job tr td:first-child {
+    width: 50%;
+    background-color: #4CAF50;
+    color: white;
 }

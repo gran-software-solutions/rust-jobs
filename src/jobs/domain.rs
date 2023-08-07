@@ -20,7 +20,7 @@ pub struct Job {
     pub start: String,
     pub job_type: JobType,
     pub location: Location,
-    pub client: String,
+    pub employer: String,
 }
 
 #[derive(Deserialize)]

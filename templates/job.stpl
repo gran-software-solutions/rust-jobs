@@ -8,19 +8,38 @@
       </h1>
 
       <div>
-        <fieldset>
-          <legend>Job Details:</legend>
-          <label for="title">Title:</label>
-          <input type="text" name="title" disabled value="<%= job.title %>"><br>
-          <label for="title">Type:</label>
-          <input type="text" name="type" disabled value="<%= job.job_type | dbg %>"><br>
-          <label for="start">Start:</label>
-          <input type="text" name="start" disabled value="<%= job.start %>"><br>
-          <label for="location">Location:</label>
-          <input type="text" name="location" disabled value="<%= job.location | dbg %>"><br>
-          <label for="client">Client:</label>
-          <input type="text" name="client" disabled value="<%= job.client %>"><br>
-        </fieldset>
+        <table id="job">
+          <tr>
+            <td>Title</td>
+            <td>
+              <%= job.title %>
+            </td>
+          </tr>
+          <tr>
+            <td>Type</td>
+            <td>
+              <%= job.job_type | dbg %>
+            </td>
+          </tr>
+          <tr>
+            <td>Start</td>
+            <td>
+              <%= job.start %>
+            </td>
+          </tr>
+          <tr>
+            <td>Location</td>
+            <td>
+              <%= job.location | dbg %>
+            </td>
+          </tr>
+          <tr>
+            <td>Employer</td>
+            <td>
+              <%= job.employer %>
+            </td>
+          </tr>
+        </table>
       </div>
   </body>
 

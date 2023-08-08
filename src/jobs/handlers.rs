@@ -5,17 +5,16 @@ use actix_web::{
     web::{self, Redirect},
     HttpResponse, Responder,
 };
+use log::info;
 use serde::Deserialize;
 use uuid::Uuid;
 
+use crate::jobs::domain::{JobLocation, JobType, Rate, RateCurrency, RateTimeUnit};
 use crate::{
     database::Db,
-    jobs::domain::Job,
+    jobs::domain::FreelanceJob,
     presenters::{home_presenter, job_details_presenter, new_job_presenter, not_found},
 };
-
-use super::domain::{JobType, Location};
-use log::info;
 
 #[get("/")]
 async fn homepage(db_mutex: web::Data<Mutex<Db>>) -> impl Responder {
@@ -43,20 +42,29 @@ async fn new_job_view() -> impl Responder {
 }
 
 #[derive(Deserialize)]
-struct NewJob {
+struct NewFreelanceJob {
     title: String,
-    job_type: JobType,
-    start: String,
-    location: Location,
-    employer: String,
+    start: Option<String>,
+    duration_in_months: u16,
+    rate: u16,
+    rate_currency: RateCurrency,
+    rate_time_unit: RateTimeUnit,
+    hours_per_week: u8,
+    location: JobLocation,
+    office_location: Option<String>,
+    description: String,
 }
 
-impl From<NewJob> for Job {
-    fn from(n: NewJob) -> Self {
+impl From<NewFreelanceJob> for FreelanceJob {
+    fn from(n: NewFreelanceJob) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
-            employer: n.employer,
-            job_type: n.job_type,
+            employer: "GRAN GmbH".to_string(), // todo
+            duration_in_months: n.duration_in_months,
+            description: n.description,
+            hours_per_week: n.hours_per_week,
+            office_location: n.office_location,
+            rate: Rate::new(n.rate, n.rate_currency, n.rate_time_unit),
             title: n.title,
             start: n.start,
             location: n.location,
@@ -64,9 +72,9 @@ impl From<NewJob> for Job {
     }
 }
 
-#[post("/jobs")]
-async fn save_new_job(
-    new_job: web::Form<NewJob>,
+#[post("/freelance-jobs")]
+async fn save_new_freelance_job(
+    new_job: web::Form<NewFreelanceJob>,
     db_mutex: web::Data<Mutex<Db>>,
 ) -> impl Responder {
     let new_job = new_job.into_inner();
@@ -104,7 +112,7 @@ async fn mutate_job(
 pub fn job_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(homepage)
         .service(new_job_view)
-        .service(save_new_job)
+        .service(save_new_freelance_job)
         .service(mutate_job)
         .service(job_details);
 }

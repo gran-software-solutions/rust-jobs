@@ -1,12 +1,12 @@
 use crate::jobs::{
     self,
-    domain::{Employer, Job},
+    domain::{Employer, FreelanceJob},
 };
 
 use uuid::Uuid;
 
 pub struct Db {
-    pub jobs: Vec<Job>,
+    pub jobs: Vec<FreelanceJob>,
     pub employers: Vec<Employer>,
 }
 
@@ -15,7 +15,7 @@ impl Db {
         let employers = ["Sony", "Google", "Amazon"];
         Self {
             jobs: vec![
-                Job {
+                FreelanceJob {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 1".to_string(),
                     start: String::from("asap"),
@@ -23,7 +23,7 @@ impl Db {
                     location: jobs::domain::Location::Remote,
                     employer: employers[0].to_string(),
                 },
-                Job {
+                FreelanceJob {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 2".to_string(),
                     start: String::from("asap"),
@@ -31,7 +31,7 @@ impl Db {
                     location: jobs::domain::Location::Office,
                     employer: employers[1].to_string(),
                 },
-                Job {
+                FreelanceJob {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 3".to_string(),
                     start: String::from("asap"),
@@ -40,16 +40,24 @@ impl Db {
                     employer: employers[2].to_string(),
                 },
             ],
-            employers: vec![Employer {
-                id: Uuid::new_v4().to_string(),
-                name: "Microsfot".to_string(),
-                email: "yolo@gransoftware.de".to_string(),
-                password: "secret123".to_string(),
-            }],
+            employers: vec![
+                Employer {
+                    id: Uuid::new_v4().to_string(),
+                    name: "Microsoft".to_string(),
+                    email: "yolo@gransoftware.de".to_string(),
+                    password: "secret123".to_string(),
+                },
+                Employer {
+                    id: Uuid::new_v4().to_string(),
+                    name: "Google".to_string(),
+                    email: "goo@gle.de".to_string(),
+                    password: "secret123".to_string(),
+                },
+            ],
         }
     }
 
-    pub fn add_job(&mut self, new_job: Job) {
+    pub fn add_job(&mut self, new_job: FreelanceJob) {
         self.jobs.push(new_job);
     }
 
@@ -61,11 +69,11 @@ impl Db {
         self.jobs.retain(|j| j.id != uuid.to_string());
     }
 
-    pub fn get_all(&self) -> &Vec<Job> {
+    pub fn get_all(&self) -> &Vec<FreelanceJob> {
         &self.jobs
     }
 
-    pub fn get_job(&self, uuid: Uuid) -> Option<&Job> {
+    pub fn get_job(&self, uuid: Uuid) -> Option<&FreelanceJob> {
         self.jobs.iter().find(|&j| j.id == uuid.to_string())
     }
 }

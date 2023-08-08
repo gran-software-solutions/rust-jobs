@@ -1,14 +1,14 @@
-use super::jobs::domain::Job;
+use super::jobs::domain::FreelanceJob;
 use sailfish::TemplateOnce;
 
 #[derive(TemplateOnce)]
 #[template(path = "home.stpl")]
 pub struct Home<'a> {
     pub title: &'a str,
-    pub jobs: &'a Vec<Job>,
+    pub jobs: &'a Vec<FreelanceJob>,
 }
 
-pub fn home_presenter(jobs: &Vec<Job>) -> String {
+pub fn home_presenter(jobs: &Vec<FreelanceJob>) -> String {
     Home {
         jobs,
         title: "Homepage",
@@ -21,7 +21,7 @@ pub fn home_presenter(jobs: &Vec<Job>) -> String {
 #[template(path = "job.stpl")]
 pub struct JobDetails<'a> {
     pub title: &'a str,
-    pub job: &'a Job,
+    pub job: &'a FreelanceJob,
 }
 
 #[derive(TemplateOnce)]
@@ -30,7 +30,7 @@ pub struct NotFound<'a> {
     pub message: &'a str,
 }
 
-pub fn job_details_presenter(job: &Job) -> String {
+pub fn job_details_presenter(job: &FreelanceJob) -> String {
     JobDetails {
         title: &job.title[..],
         job,

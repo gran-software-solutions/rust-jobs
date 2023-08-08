@@ -1,34 +1,80 @@
 <html>
 <% let title="Create a new job" ; %>
-  <% include!("./head.stpl"); %>
+<% include!("./head.stpl"); %>
 
-    <body>
-      <% include!("./navbar.stpl"); %>
-        <div>
-          <form action="/jobs" method="POST">
-            <fieldset>
-              <legend>Create a new Job:</legend>
-              <label for="title">Title:</label>
-              <input type="text" name="title"><br>
-              <label for="job_type">Type:</label>
-              <select name="job_type">
-                <option value="Permanent">Permanent</option>
-                <option value="Freelance">Freelance</option>
-              </select><br />
-              <label for="start">Start:</label>
-              <input type="text" name="start"><br>
-              <label for="location">Location:</label>
-              <select name="location">
-                <option value="Office">Office</option>
-                <option value="Remote">Remote</option>
-                <option value="Hybrid">Hybrid</option>
-              </select><br />
-              <label for="employer">Employer:</label>
-              <input type="text" name="employer"><br>
-              <input type="submit" value="Save Job">
-            </fieldset>
-          </form>
-        </div>
-    </body>
+<body>
+<% include!("./navbar.stpl"); %>
+<div>
+    <table>
+        <tr>
+            <td>
+                <form action="/freelance-jobs" method="POST">
+                    <fieldset>
+                        <legend>Freelance job</legend>
+                        <label for="title">Title: *</label>
+                        <input type="text" name="title" id="title"/>
+                        <hr/>
+                        <label for="start">Start:</label>
+                        <input type="text" name="start" id="start" placeholder="dd.mm.yyyy">
+                        <hr/>
+                        <label for="duration_in_months">Duration (months): *</label>
+                        <input type="number" id="duration_in_months" name="duration_in_months" min="1"/>
+                        <hr/>
+                        <label for="rate">Rate: *</label>
+                        <input type="text" name="rate" id="rate"/>
+                        <select name="rate_currency" id="rate_currency">
+                            <option value="Euro">&euro;</option>
+                            <option value="Dollar">$</option>
+                        </select> / <select name="rate_time_unit" id="rate_time_unit">
+                            <option value="Hour">Hour</option>
+                            <option value="Day">Day</option>
+                        </select>
+                        <hr/>
+                        <label for="hours_per_week">Hours per week:</label>
+                        <input type="number" placeholder="e.g 30" name="hours_per_week" id="hours_per_week"/>
+                        <hr/>
+                        <label for="location">Location: *</label>
+                        <select name="location" id="location">
+                            <option value="Office">Office</option>
+                            <option value="Remote">Remote</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                        <hr/>
+                        <label for="office_location">Office location:</label>
+                        <input type="text" name="office_location" id="office_location"/>
+                        <hr/>
+                        <label for="description">Job description: *</label>
+                        <textarea name="description"></textarea><br>
+                        <input type="submit" value="Save Job"/>
+                    </fieldset>
+                </form>
+            </td>
+            <td>
+                <form action="/jobs" method="POST">
+                    <fieldset>
+                        <legend>Regular job</legend>
+                        <label for="title">Title:</label>
+                        <input type="text" name="title"><br>
+                        <label for="job_type">Type:</label>
+                        <input type="text" name="job_type" value="Permanent"><br>
+                        <label for="start">Start:</label>
+                        <input type="text" name="start"><br>
+                        <label for="location">Location:</label>
+                        <select name="location">
+                            <option value="Office">Office</option>
+                            <option value="Remote">Remote</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select><br/>
+                        <label for="employer">Employer:</label>
+                        <input type="text" name="employer"><br>
+                        <input type="submit" value="Save Job">
+                    </fieldset>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+</div>
+</body>
 
 </html>

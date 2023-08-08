@@ -3,10 +3,12 @@ use crate::jobs::{
     domain::{Employer, FreelanceJob},
 };
 
+use crate::jobs::domain::RegularJob;
 use uuid::Uuid;
 
 pub struct Db {
-    pub jobs: Vec<FreelanceJob>,
+    pub freelance_jobs: Vec<FreelanceJob>,
+    pub regular_jobs: Vec<RegularJob>,
     pub employers: Vec<Employer>,
 }
 
@@ -14,7 +16,7 @@ impl Db {
     pub fn new() -> Self {
         let employers = ["Sony", "Google", "Amazon"];
         Self {
-            jobs: vec![
+            freelance_jobs: vec![
                 FreelanceJob {
                     id: Uuid::new_v4().to_string(),
                     title: "Title 1".to_string(),
@@ -40,6 +42,7 @@ impl Db {
                     employer: employers[2].to_string(),
                 },
             ],
+            regular_jobs: vec![RegularJob {}],
             employers: vec![
                 Employer {
                     id: Uuid::new_v4().to_string(),
@@ -58,7 +61,7 @@ impl Db {
     }
 
     pub fn add_job(&mut self, new_job: FreelanceJob) {
-        self.jobs.push(new_job);
+        self.freelance_jobs.push(new_job);
     }
 
     pub fn add_employer<'a>(&mut self, new_employer: Employer) {
@@ -66,14 +69,20 @@ impl Db {
     }
 
     pub fn delete(&mut self, uuid: Uuid) {
-        self.jobs.retain(|j| j.id != uuid.to_string());
+        self.freelance_jobs.retain(|j| j.id != uuid.to_string());
     }
 
     pub fn get_all(&self) -> &Vec<FreelanceJob> {
-        &self.jobs
+        &self.freelance_jobs
     }
 
-    pub fn get_job(&self, uuid: Uuid) -> Option<&FreelanceJob> {
-        self.jobs.iter().find(|&j| j.id == uuid.to_string())
+    pub fn get_freelance_job(&self, uuid: Uuid) -> Option<&FreelanceJob> {
+        self.freelance_jobs
+            .iter()
+            .find(|&j| j.id == uuid.to_string())
+    }
+
+    pub fn get_regular_job(&self, uuid: Uuid) -> Option<&RegularJob> {
+        self.regular_jobs.iter().find(|&j| j.id == uuid.to_string())
     }
 }

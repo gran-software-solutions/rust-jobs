@@ -9,11 +9,12 @@ use log::info;
 use serde::Deserialize;
 use uuid::Uuid;
 
-use crate::jobs::domain::{JobLocation, JobType, Rate, RateCurrency, RateTimeUnit};
+use crate::jobs::domain::{Currency, JobLocation, JobType, Rate, RateTimeUnit};
+use crate::presenters::freelance_job_presenter;
 use crate::{
     database::Db,
     jobs::domain::FreelanceJob,
-    presenters::{home_presenter, job_details_presenter, new_job_presenter, not_found},
+    presenters::{home_presenter, new_regular_job_presenter, not_found, regular_job_presenter},
 };
 
 #[get("/")]
@@ -23,22 +24,46 @@ async fn homepage(db_mutex: web::Data<Mutex<Db>>) -> impl Responder {
     HttpResponse::Ok().body(home_presenter(db.get_all()))
 }
 
-#[get("/jobs/{id}")]
-async fn job_details(id: web::Path<Uuid>, db_mutex: web::Data<Mutex<Db>>) -> impl Responder {
+#[get("/freelance-jobs/{id}")]
+async fn freelance_job_details(
+    id: web::Path<Uuid>,
+    db_mutex: web::Data<Mutex<Db>>,
+) -> impl Responder {
     let job_id = id.into_inner();
     let db = db_mutex.lock().unwrap();
 
-    match db.get_job(job_id) {
+    match db.get_freelance_job(job_id) {
         None => {
             HttpResponse::NotFound().body(not_found(format!("Job with id {} not found", job_id)))
         }
-        Some(job) => HttpResponse::Ok().body(job_details_presenter(job)),
+        Some(job) => HttpResponse::Ok().body(freelance_job_presenter(job)),
     }
 }
 
-#[get("/jobs/new")]
-async fn new_job_view() -> impl Responder {
-    HttpResponse::Ok().body(new_job_presenter())
+#[get("/regular-jobs/{id}")]
+async fn regular_job_details(
+    id: web::Path<Uuid>,
+    db_mutex: web::Data<Mutex<Db>>,
+) -> impl Responder {
+    let job_id = id.into_inner();
+    let db = db_mutex.lock().unwrap();
+
+    match db.get_regular_job(job_id) {
+        None => {
+            HttpResponse::NotFound().body(not_found(format!("Job with id {} not found", job_id)))
+        }
+        Some(job) => HttpResponse::Ok().body(regular_job_presenter(job)),
+    }
+}
+
+#[get("/freelance-jobs/new")]
+async fn new_freelance_job_view() -> impl Responder {
+    HttpResponse::Ok().body(new_regular_job_presenter())
+}
+
+#[get("/regular-jobs/new")]
+async fn new_regular_job_view() -> impl Responder {
+    HttpResponse::Ok().body(new_regular_job_presenter())
 }
 
 #[derive(Deserialize)]
@@ -47,7 +72,7 @@ struct NewFreelanceJob {
     start: Option<String>,
     duration_in_months: u16,
     rate: u16,
-    rate_currency: RateCurrency,
+    rate_currency: Currency,
     rate_time_unit: RateTimeUnit,
     hours_per_week: u8,
     location: JobLocation,
@@ -111,8 +136,9 @@ async fn mutate_job(
 
 pub fn job_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(homepage)
-        .service(new_job_view)
+        .service(new_regular_job_view)
         .service(save_new_freelance_job)
         .service(mutate_job)
-        .service(job_details);
+        .service(freelance_job_details)
+        .service(regular_job_details);
 }

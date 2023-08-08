@@ -14,7 +14,7 @@ pub enum JobLocation {
 }
 
 #[derive(Deserialize, Clone)]
-pub enum RateCurrency {
+pub enum Currency {
     Euro,
     Dollar,
 }
@@ -28,12 +28,18 @@ pub enum RateTimeUnit {
 #[derive(Deserialize, Clone)]
 pub struct Rate {
     pub amount: u16,
-    pub currency: RateCurrency,
+    pub currency: Currency,
     pub time_unit: RateTimeUnit,
 }
 
+#[derive(Deserialize, Clone)]
+pub struct Budget {
+    pub amount: u16,
+    pub currency: Currency,
+}
+
 impl Rate {
-    pub fn new(amount: u16, currency: RateCurrency, time_unit: RateTimeUnit) -> Self {
+    pub fn new(amount: u16, currency: Currency, time_unit: RateTimeUnit) -> Self {
         Self {
             amount,
             currency,
@@ -51,6 +57,19 @@ pub struct FreelanceJob {
     pub duration_in_months: u16,
     pub rate: Rate,
     pub hours_per_week: u8,
+    pub location: JobLocation,
+    pub office_location: Option<String>,
+    pub description: String,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct RegularJob {
+    pub id: String,
+    pub employer: String,
+    pub title: String,
+    pub start: Option<String>,
+    pub hours_per_week: u8,
+    pub budget: Budget,
     pub location: JobLocation,
     pub office_location: Option<String>,
     pub description: String,

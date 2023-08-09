@@ -52,7 +52,7 @@
             <td>
                 <form action="/jobs" method="POST">
                     <fieldset>
-                        <legend>Regular job</legend>
+                        <legend>Permanent job</legend>
                         <label for="title">Title:</label>
                         <input type="text" name="title"><br>
                         <label for="job_type">Type:</label>

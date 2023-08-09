@@ -34,7 +34,7 @@ pub struct Rate {
 
 #[derive(Deserialize, Clone)]
 pub struct Budget {
-    pub amount: u16,
+    pub amount: u32,
     pub currency: Currency,
 }
 
@@ -46,6 +46,11 @@ impl Rate {
             time_unit,
         }
     }
+}
+
+pub enum Job {
+    Permanent(PermanentJob),
+    Freelance(FreelanceJob),
 }
 
 #[derive(Deserialize, Clone)]
@@ -63,7 +68,7 @@ pub struct FreelanceJob {
 }
 
 #[derive(Deserialize, Clone)]
-pub struct RegularJob {
+pub struct PermanentJob {
     pub id: String,
     pub employer: String,
     pub title: String,

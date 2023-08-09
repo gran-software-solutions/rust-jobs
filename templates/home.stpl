@@ -1,5 +1,8 @@
 <html>
-<% include!("./head.stpl"); %>
+<%
+let title = "Homepage";
+include!("./head.stpl");
+%>
 
   <body>
     <% include!("./navbar.stpl"); %>
@@ -11,9 +14,9 @@
         <ol>
           <% for job in jobs {%>
             <li>
-              <form method="post" action="/jobs/<%= job.id %>">
+              <form method="post" action="/jobs/<%= *job.get_id() %>">
                 <input type="hidden" name="job_mutation" value="DELETE">
-                <%= job.title %> <a href="/jobs/<%= job.id %>" title="View job details"><i class="fa-regular fa-eye"></i></a> <a href=“#” title="Delete job" onclick="this.closest('form').submit(); return false;"><i class="fa-regular fa-trash-can"></i></a>
+                <%= job.get_title() %> <a href="/jobs/<%= *job.get_id() %>" title="View job details"><i class="fa-regular fa-eye"></i></a> <a href=“#” title="Delete job" onclick="this.closest('form').submit(); return false;"><i class="fa-regular fa-trash-can"></i></a>
               </form>
             </li>
             <% } %>

@@ -1,19 +1,11 @@
-mod database;
-mod jobs;
+mod handlers;
 mod k8s_probes;
-mod presenters;
-mod signup;
-mod static_files;
 
+use crate::handlers::{homepage, signup_employer, signup_rust_dev};
+use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
-use database::*;
 use env_logger::Env;
 use k8s_probes::*;
-use signup::*;
-use static_files::*;
-use std::sync::Mutex;
-
-use crate::jobs::handlers::job_routes;
 
 #[actix_web::main]
 async fn main() {
@@ -21,25 +13,20 @@ async fn main() {
 
     let addr = "0.0.0.0:8080";
 
-    let db = web::Data::new(Mutex::new(Db::new()));
-
     let server = HttpServer::new(move || {
         App::new()
-            .app_data(db.clone())
             .wrap(middleware::NormalizePath::trim())
-            .configure(routes)
+            .service(Files::new("/static", "./static/root"))
+            .service(web::scope("/probe").service(liveness).service(readiness))
+            .route("/", web::get().to(homepage))
+            .route("/signup/dev", web::get().to(signup_rust_dev))
+            .route("/signup/employer", web::get().to(signup_employer))
     })
     .bind(addr)
     .unwrap()
     .run();
+    //    let scope = web::scope("/probe").service(liveness).service(readiness);
 
     println!("Server live at http://{}", addr);
     server.await.unwrap();
-}
-
-fn routes(cfg: &mut web::ServiceConfig) {
-    cfg.configure(static_files)
-        .configure(job_routes)
-        .configure(k8s_probes)
-        .configure(signup);
 }

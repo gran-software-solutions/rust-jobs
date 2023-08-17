@@ -21,7 +21,21 @@
             </thead>
             <tbody>
               <% for job in jobs { %>
-
+                <tr>
+                  <td class="fira-sans">
+                    <%= job.title %>
+                  </td>
+                  <td class="fira-sans">
+                    <%= job.job_type %>
+                  </td>
+                  <td class="fira-sans">Full-time</td>
+                  <td class="fira-sans">
+                    <%= job.location %>
+                  </td>
+                  <td class="fira-sans">
+                    <%= job.budget %>
+                  </td>
+                </tr>
                 <%}%>
                   <!-- Add more rows as needed -->
             </tbody>
@@ -40,7 +54,7 @@
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod quam eu mauris laoreet, sit
                 amet dictum urna feugiat.</p>
               <p>Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum.</p>
-              <a href="/signup/dev" class="register-button">Register As A Rust Developer</a>
+              <a href="#" class="register-button">Register As A Rust Developer</a>
             </div>
           </div>
         </div>

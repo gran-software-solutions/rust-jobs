@@ -1,6 +1,7 @@
 use std::fmt;
 
 use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 pub enum Role {
     HiringManager,
@@ -85,6 +86,7 @@ impl fmt::Display for FreelanceRateUnit {
 
 #[derive(Debug)]
 pub struct FreelanceJob {
+    pub id: Uuid,
     pub title: String,
     pub location: JobLocation,
     pub rate: FreelanceRate,
@@ -96,6 +98,7 @@ pub struct FreelanceJob {
 
 #[derive(Debug)]
 pub struct PermanentJob {
+    pub id: Uuid,
     pub title: String,
     pub location: JobLocation,
     pub salary: Salary,

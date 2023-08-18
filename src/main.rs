@@ -2,7 +2,7 @@ mod database;
 mod domain;
 mod handlers;
 mod k8s_probes;
-use crate::handlers::{homepage, signup_employer, signup_rust_dev};
+use crate::handlers::{homepage, job_details, job_search, signup_employer, signup_rust_dev};
 use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
 use database::Database;
@@ -24,6 +24,8 @@ async fn main() {
             .service(Files::new("/static", "./static/root"))
             .service(web::scope("/probe").service(liveness).service(readiness))
             .route("/", web::get().to(homepage))
+            .route("/jobs/search", web::get().to(job_search))
+            .route("/jobs/{id}", web::get().to(job_details))
             .route("/signup/dev", web::get().to(signup_rust_dev))
             .route("/signup/employer", web::get().to(signup_employer))
     })

@@ -8,7 +8,7 @@ use crate::{
     handlers::{footer, head, header},
 };
 
-pub struct HomepageJob {
+pub struct SearchResultJob {
     pub id: Uuid,
     pub title: String,
     pub job_type: String,
@@ -19,9 +19,9 @@ pub struct HomepageJob {
     pub last_updated_on: String,
 }
 
-impl From<&FreelanceJob> for HomepageJob {
+impl From<&FreelanceJob> for SearchResultJob {
     fn from(value: &FreelanceJob) -> Self {
-        HomepageJob {
+        SearchResultJob {
             id: value.id,
             title: value.title.clone(),
             job_type: "Freelance".to_string(),
@@ -42,9 +42,9 @@ impl From<&FreelanceJob> for HomepageJob {
         }
     }
 }
-impl From<&PermanentJob> for HomepageJob {
-    fn from(value: &PermanentJob) -> HomepageJob {
-        HomepageJob {
+impl From<&PermanentJob> for SearchResultJob {
+    fn from(value: &PermanentJob) -> SearchResultJob {
+        SearchResultJob {
             id: value.id,
             title: value.title.clone(),
             job_type: "Permanent".to_string(),
@@ -63,7 +63,7 @@ impl From<&PermanentJob> for HomepageJob {
     }
 }
 
-impl From<&Job> for HomepageJob {
+impl From<&Job> for SearchResultJob {
     fn from(value: &Job) -> Self {
         match value {
             Job::Freelance(fj) => fj.into(),
@@ -72,14 +72,20 @@ impl From<&Job> for HomepageJob {
     }
 }
 
-pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
-    let jobs: Vec<HomepageJob> = db
-        .get_jobs(Some(5))
+#[derive(serde::Deserialize)]
+pub struct JobSearch {}
+
+pub async fn job_search(
+    db: web::Data<Database>,
+    _search: web::Query<JobSearch>,
+) -> actix_web::Result<Markup> {
+    let jobs: Vec<SearchResultJob> = db
+        .get_jobs(None)
         .iter()
-        .map(|j| HomepageJob::from(*j))
+        .map(|j| SearchResultJob::from(*j))
         .collect();
     Ok(html! {
-        (head("Homepage"))
+        (head("Search Jobs Page"))
         (header())
         div class="content-container" {
             div class="content" {
@@ -125,37 +131,6 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
                                     (job.last_updated_on)
                                 }
                             }
-                        }
-                    }
-                }
-                div class="centered-link" {
-                    a href="/jobs/search" class="normal-link" {
-                        "See the full list"
-                    }
-                }
-                div class="container" {
-                    div class="box" {
-                        p {
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod quam eu mauris laoreet, sit
-                            amet dictum urna feugiat."
-                        }
-                        p {
-                            "Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum."
-                        }
-                        a href="/signup/employer" class="register-button" {
-                            "Post A Job Today As Employer"
-                        }
-                    }
-                    div class="box" {
-                        p {
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod quam eu mauris laoreet, sit
-                            amet dictum urna feugiat."
-                        }
-                        p {
-                            "Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum."
-                        }
-                        a href="/signup/dev" class="register-button" {
-                            "Register As A Rust Developer"
                         }
                     }
                 }

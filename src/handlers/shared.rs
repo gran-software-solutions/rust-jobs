@@ -61,3 +61,17 @@ pub fn footer() -> Markup {
         }
     }
 }
+
+pub fn not_found(msg: &str) -> Markup {
+    html! {
+        (head("Oooops! 404"))
+            (header())
+            h1 { (msg)}
+            div class="centered-link" {
+                a href="/" {
+                    "To homepage"
+                }
+            }
+            (footer())
+    }
+}

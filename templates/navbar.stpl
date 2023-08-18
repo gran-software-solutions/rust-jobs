@@ -9,7 +9,7 @@
 
     <div class="pure-u-2-3 header-links">
       <ul class="pure-menu pure-menu-horizontal pure-menu-right">
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Register</a></li>
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sign Up</a></li>
         <li class="pure-menu-item"><a href="#" class="pure-menu-link">Login</a></li>
       </ul>
     </div>

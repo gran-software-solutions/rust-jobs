@@ -4,12 +4,12 @@ use crate::handlers::{footer, head, header};
 
 pub async fn signup_rust_dev() -> actix_web::Result<Markup> {
     Ok(html! {
-        (head("Signup as Rust Dev"))
+        (head("Sign Up as Rust Dev"))
         (header())
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {
-                    "Signup as Rust Dev"
+                    "Sign Up as Rust Dev"
                 }
                 div {
                     form class="pure-form pure-form-stacked" {
@@ -31,12 +31,12 @@ pub async fn signup_rust_dev() -> actix_web::Result<Markup> {
 
 pub async fn signup_employer() -> actix_web::Result<Markup> {
     Ok(html! {
-        (head("Signup as Employer"))
+        (head("Sign Up as Employer"))
         (header())
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {
-                    "Signup as Employer"
+                    "Sign Up as Employer"
                 }
                 div {
                     form class="pure-form pure-form-stacked" {

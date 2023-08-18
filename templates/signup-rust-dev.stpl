@@ -8,7 +8,7 @@
           <h1 class="centered-text job-count-text">Signup rust dev</h1>
           <form class="pure-form pure-form-stacked">
             <fieldset>
-              <legend>Register as Rust Dev</legend>
+              <legend>Sign Up as Rust Dev</legend>
               <label for="stacked-email">E-mail</label>
               <input type="email" id="stacked-email" name="email" placeholder="Email" />
               <label for="stacked-password">Password</label>
@@ -16,7 +16,7 @@
               <label for="stacked-repeat-password">Repeat Password</label>
               <input type="password" id="stacked-repeat-password" name="repeat-password"
                 placeholder="Repeat Password" />
-              <button type="submit" class="pure-button pure-button-primary">Register as Rust Dev ></button>
+              <button type="submit" class="pure-button pure-button-primary">Sign Up as Rust Dev ></button>
             </fieldset>
           </form>
         </div>

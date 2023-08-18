@@ -16,7 +16,7 @@ pub fn header() -> Markup {
                     ul class="pure-menu pure-menu-horizontal pure-menu-right" {
                         li class="pure-menu-item" {
                             a href="#" class="pure-menu-link" {
-                                "Register"
+                                "Sign Up"
                             }
                         }
                         li class="pure-menu-item" {

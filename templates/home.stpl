@@ -34,13 +34,13 @@
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod quam eu mauris laoreet, sit
                 amet dictum urna feugiat.</p>
               <p>Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum.</p>
-              <a href="#" class="register-button">Post A Job Today As Employee</a>
+              <a href="#" class="signup-button">Post A Job Today As Employee</a>
             </div>
             <div class="box">
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod quam eu mauris laoreet, sit
                 amet dictum urna feugiat.</p>
               <p>Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum.</p>
-              <a href="/signup/dev" class="register-button">Register As A Rust Developer</a>
+              <a href="/signup/dev" class="signup-button">Sign Up As A Rust Developer</a>
             </div>
           </div>
         </div>

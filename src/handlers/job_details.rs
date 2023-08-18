@@ -103,6 +103,14 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
             }
             tr {
                 th class="highlighted-cell" {
+                    "Employer location"
+                }
+                th {
+                    (freelance_job.employer.address.city) " (" (freelance_job.employer.address.country) ")"
+                }
+            }
+            tr {
+                th class="highlighted-cell" {
                     "Location"
                 }
                 th {
@@ -157,6 +165,14 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
                 }
                 th {
                     (permanent_job.employer.name)
+                }
+            }
+            tr {
+                th class="highlighted-cell" {
+                    "Employer location"
+                }
+                th {
+                    (permanent_job.employer.address.city) " (" (permanent_job.employer.address.country) ")"
                 }
             }
             tr {

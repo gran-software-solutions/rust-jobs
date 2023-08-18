@@ -1,9 +1,11 @@
+mod database;
+mod domain;
 mod handlers;
 mod k8s_probes;
-
 use crate::handlers::{homepage, signup_employer, signup_rust_dev};
 use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
+use database::Database;
 use env_logger::Env;
 use k8s_probes::*;
 
@@ -13,8 +15,11 @@ async fn main() {
 
     let addr = "0.0.0.0:8080";
 
+    let db = web::Data::new(Database::new());
+
     let server = HttpServer::new(move || {
         App::new()
+            .app_data(db.clone())
             .wrap(middleware::NormalizePath::trim())
             .service(Files::new("/static", "./static/root"))
             .service(web::scope("/probe").service(liveness).service(readiness))

@@ -1,39 +1,79 @@
+use actix_web::web;
 use maud::{html, Markup};
 
-use crate::handlers::{footer, head, header};
+use crate::{
+    database::Database,
+    domain::{FreelanceJob, Job, PermanentJob},
+    handlers::{footer, head, header},
+};
 
 pub struct HomepageJob {
     pub title: String,
     pub job_type: String,
-    pub mode: String,
-    pub place: String,
+    pub location: String,
+    pub employer_name: String,
+    pub address: String,
     pub budget: String,
+    pub last_updated_on: String,
 }
 
-pub async fn homepage() -> actix_web::Result<Markup> {
-    let jobs = vec![
+impl From<&FreelanceJob> for HomepageJob {
+    fn from(value: &FreelanceJob) -> Self {
         HomepageJob {
-            title: "Senior Rust Developer".to_string(),
+            title: value.title.clone(),
             job_type: "Freelance".to_string(),
-            mode: "On-site".to_string(),
-            place: "Berlin (Germany)".to_string(),
-            budget: "90€/h".to_string(),
-        },
+            location: value.location.to_string(),
+            employer_name: value.employer.name.clone(),
+            address: format!(
+                "{} ({})",
+                value.employer.address.city, value.employer.address.country
+            ),
+            budget: format!(
+                "{} {} / {}",
+                value.rate.amount, value.rate.currency, value.rate.unit,
+            ),
+            last_updated_on: value
+                .last_updated_on
+                .format("%Y-%m-%d %H:%M:%S")
+                .to_string(),
+        }
+    }
+}
+impl From<&PermanentJob> for HomepageJob {
+    fn from(value: &PermanentJob) -> HomepageJob {
         HomepageJob {
-            title: "Rust Dev".to_string(),
+            title: value.title.clone(),
             job_type: "Permanent".to_string(),
-            mode: "Hybrid".to_string(),
-            place: "Ingolstadt (Germany)".to_string(),
-            budget: "90000 €/annum".to_string(),
-        },
-        HomepageJob {
-            title: "Lead Rust Developer".to_string(),
-            job_type: "Freelance".to_string(),
-            mode: "Remote".to_string(),
-            place: "Berlin (Germany)".to_string(),
-            budget: "90€/h".to_string(),
-        },
-    ];
+            location: value.location.to_string(),
+            employer_name: value.employer.name.clone(),
+            budget: format!("{} {} / annum", value.salary.amount, value.salary.currency),
+            address: format!(
+                "{} ({})",
+                value.employer.address.city, value.employer.address.country
+            ),
+            last_updated_on: value
+                .last_updated_on
+                .format("%Y-%m-%d %H:%M:%S")
+                .to_string(),
+        }
+    }
+}
+
+impl From<&Job> for HomepageJob {
+    fn from(value: &Job) -> Self {
+        match value {
+            Job::Freelance(fj) => fj.into(),
+            Job::Permanent(p) => p.into(),
+        }
+    }
+}
+
+pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
+    let jobs: Vec<HomepageJob> = db
+        .get_jobs(Some(5))
+        .iter()
+        .map(|j| HomepageJob::from(*j))
+        .collect();
     Ok(html! {
         (head("Homepage"))
         (header())
@@ -50,10 +90,11 @@ pub async fn homepage() -> actix_web::Result<Markup> {
                             th { "Type" }
                             th { "Location" }
                             th { "Budget" }
+                            th { "Updated on" }
                         }
                     }
                     tbody {
-                        @for job in &jobs {
+                        @for job in jobs {
                             tr {
                                 td class="fira-sans" {
                                     (job.title)
@@ -62,13 +103,16 @@ pub async fn homepage() -> actix_web::Result<Markup> {
                                     (job.job_type)
                                 }
                                 td class="fira-sans" {
-                                    (job.mode)
+                                    (job.location)
                                 }
                                 td class="fira-sans" {
-                                    (job.place)
+                                    (job.location)
                                 }
                                 td class="fira-sans" {
                                     (job.budget)
+                                }
+                                td class="fira-sans" {
+                                    (job.last_updated_on)
                                 }
                             }
                         }

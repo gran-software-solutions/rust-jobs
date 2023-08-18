@@ -11,6 +11,9 @@ pub struct Database {
 }
 
 impl Database {
+    pub fn get_jobs_count(&self) -> usize {
+        self.jobs.len()
+    }
     pub fn get_job(&self, job_id: Uuid) -> Option<&Job> {
         self.jobs.iter().find(|&j| match j {
             Job::Freelance(f) => f.id == job_id,

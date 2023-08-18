@@ -73,6 +73,7 @@ impl From<&Job> for HomepageJob {
 }
 
 pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
+    let jobs_count = db.get_jobs_count();
     let jobs: Vec<HomepageJob> = db
         .get_jobs(Some(5))
         .iter()
@@ -84,7 +85,7 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {
-                    "We have " span class="job-count" { (jobs.len()) } " rust jobs for You"
+                    "We have " span class="job-count" { (jobs_count) } " rust jobs for You"
                 }
                 table class="pure-table centered-table" {
                     thead {

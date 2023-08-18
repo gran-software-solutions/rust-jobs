@@ -78,7 +78,7 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
         h1 { "Freelance Job: " (freelance_job.title) }
         table class="pure-table pure-table-horizontal centered-table" {
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Id"
                 }
                 th {
@@ -86,7 +86,7 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Title"
                 }
                 th {
@@ -94,7 +94,7 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Employer name"
                 }
                 th {
@@ -102,7 +102,7 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Location"
                 }
                 th {
@@ -110,7 +110,7 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Budget"
                 }
                 th {
@@ -118,7 +118,7 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Start"
                 }
                 th {
@@ -136,7 +136,7 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
         h1 { "Permanent Job: " (permanent_job.title) }
         table class="pure-table pure-table-horizontal centered-table" {
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Id"
                 }
                 th {
@@ -144,7 +144,7 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Title"
                 }
                 th {
@@ -152,7 +152,7 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Employer name"
                 }
                 th {
@@ -160,7 +160,7 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Location"
                 }
                 th {
@@ -168,7 +168,7 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Budget"
                 }
                 th {
@@ -176,7 +176,7 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
                 }
             }
             tr {
-                th {
+                th class="highlighted-cell" {
                     "Start"
                 }
                 th {

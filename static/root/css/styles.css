@@ -52,6 +52,7 @@ h1 {
 .centered-table {
     margin: 0 auto;
     /* Center-align the table */
+    text-align: left;
 }
 
 
@@ -175,4 +176,8 @@ h1 {
 .pure-button-primary {
     background: #FFC832;
     color: #000000;
+}
+
+.highlighted-cell {
+    background-color: #FFC832;
 }

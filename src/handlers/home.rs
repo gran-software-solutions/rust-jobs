@@ -84,7 +84,7 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {
-                    "Currently there are " span class="job-count" { "300" } " rust jobs listed"
+                    "We have " span class="job-count" { (jobs.len()) } " rust jobs for You"
                 }
                 table class="pure-table centered-table" {
                     thead {

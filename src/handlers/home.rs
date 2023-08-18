@@ -72,10 +72,12 @@ impl From<&Job> for HomepageJob {
     }
 }
 
+const JOBS_COUNT_ON_HOMEPAGE: usize = 5;
+
 pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
     let jobs_count = db.get_jobs_count();
     let jobs: Vec<HomepageJob> = db
-        .get_jobs(Some(5))
+        .get_jobs(Some(JOBS_COUNT_ON_HOMEPAGE))
         .iter()
         .map(|j| HomepageJob::from(*j))
         .collect();

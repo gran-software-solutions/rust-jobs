@@ -145,7 +145,7 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
                         p {
                             "Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum."
                         }
-                        a href="/signup/employer" class="signup-button" {
+                        a href="/signups" class="signup-button" {
                             "Post A Job Today As Employer"
                         }
                     }
@@ -157,7 +157,7 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
                         p {
                             "Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum."
                         }
-                        a href="/signup/dev" class="signup-button" {
+                        a href="/signups" class="signup-button" {
                             "Sign Up As A Rust Developer"
                         }
                     }

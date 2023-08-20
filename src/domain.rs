@@ -21,6 +21,7 @@ impl fmt::Display for Job {
 
 pub struct User {
     pub email: String,
+    pub password: String,
     pub roles: Vec<Role>,
 }
 

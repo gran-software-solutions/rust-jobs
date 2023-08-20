@@ -32,18 +32,22 @@ impl Database {
             users: vec![
                 User {
                     email: "gg@gransoftware.de".to_string(),
+                    password: "gg".to_string(),
                     roles: vec![Role::HiringManager, Role::Dev],
                 },
                 User {
                     email: "do@gransoftware.de".to_string(),
+                    password: "do".to_string(),
                     roles: vec![Role::HiringManager, Role::Dev],
                 },
                 User {
                     email: "rust@dev.de".to_string(),
+                    password: "dev".to_string(),
                     roles: vec![Role::Dev],
                 },
                 User {
                     email: "hiring@manager.de".to_string(),
+                    password: "hiring".to_string(),
                     roles: vec![Role::HiringManager],
                 },
             ],

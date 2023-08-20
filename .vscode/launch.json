@@ -7,8 +7,37 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/<executable file>",
+            "name": "Debug executable 'rust-jobs'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust-jobs",
+                    "--package=rust-jobs"
+                ],
+                "filter": {
+                    "name": "rust-jobs",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'rust-jobs'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=rust-jobs",
+                    "--package=rust-jobs"
+                ],
+                "filter": {
+                    "name": "rust-jobs",
+                    "kind": "bin"
+                }
+            },
             "args": [],
             "cwd": "${workspaceFolder}"
         }

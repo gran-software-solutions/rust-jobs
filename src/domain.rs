@@ -1,10 +1,12 @@
 use std::fmt;
 
 use chrono::{DateTime, Utc};
+use serde::Deserialize;
 use uuid::Uuid;
 
+#[derive(Debug, Deserialize)]
 pub enum Role {
-    HiringManager,
+    Employer,
     Dev,
 }
 #[derive(Debug)]
@@ -19,10 +21,11 @@ impl fmt::Display for Job {
     }
 }
 
+#[derive(Debug)]
 pub struct User {
     pub email: String,
     pub password: String,
-    pub roles: Vec<Role>,
+    pub role: Role,
 }
 
 #[derive(Debug)]

@@ -181,3 +181,7 @@ h1 {
 .highlighted-cell {
     background-color: #FFC832;
 }
+
+p.error {
+    color: red;
+}

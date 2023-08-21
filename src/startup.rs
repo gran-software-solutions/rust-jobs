@@ -1,13 +1,26 @@
-use std::{net::TcpListener, time::Duration};
+use std::net::TcpListener;
 
+use actix_files::Files;
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
-use actix_web::{cookie::Key, dev::Server, web::Data, App, HttpServer};
+use actix_web::{
+    cookie::Key,
+    dev::Server,
+    middleware,
+    web::{self, Data},
+    App, HttpServer,
+};
 use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
+use actix_web_lab::middleware::from_fn;
 use anyhow::Ok;
 use secrecy::{ExposeSecret, Secret};
-use sqlx::{pool::PoolOptions, postgres::PgPoolOptions, PgPool, Pool, Postgres};
+use sqlx::{postgres::PgPoolOptions, PgPool};
 
-use crate::configuration::{DatabaseSettings, Settings};
+use crate::{
+    authentication::reject_anonymous_users,
+    configuration::{DatabaseSettings, Settings},
+    handlers::{homepage, job_details, job_search, signup, signup_form},
+    monitoring::{liveness, readiness},
+};
 
 pub struct Application {
     port: u16,
@@ -23,6 +36,21 @@ impl Application {
         );
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr().unwrap().port();
+        let server = run(
+            listener,
+            connection_pool,
+            settings.application.base_url,
+            settings.application.hmac_secret,
+            settings.redis_uri,
+        )
+        .await?;
+        Ok(Self { port, server })
+    }
+    pub fn port(&self) -> u16 {
+        self.port
+    }
+    pub async fn run_until_stopped(self) -> Result<(), std::io::Error> {
+        self.server.await
     }
 }
 
@@ -48,9 +76,22 @@ async fn run(
                 redis_store.clone(),
                 secret_key.clone(),
             ))
+            .app_data(Data::new(HmacSecret(hmac_secret.clone())))
             .app_data(db_pool.clone())
             .app_data(base_url.clone())
-            .app_data(Data::new(HmacSecret(hmac_secret.clone())))
+            .wrap(middleware::NormalizePath::trim())
+            .service(Files::new("/static", "./static/root"))
+            .service(web::scope("/probe").service(liveness).service(readiness))
+            .route("/", web::get().to(homepage))
+            .route("/jobs/search", web::get().to(job_search))
+            .route(
+                "/jobs/{id}",
+                web::get()
+                    .wrap(from_fn(reject_anonymous_users))
+                    .to(job_details),
+            )
+            .route("/signups", web::get().to(signup_form))
+            .route("/signups", web::post().to(signup))
     })
     .listen(listener)?
     .run();

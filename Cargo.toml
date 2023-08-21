@@ -31,6 +31,7 @@ uuid = { version = "1.4.1", features = [
 ] }
 sqlx = { version = "0.7.1", default-features = false, features = [
     "tls-rustls",
+    "runtime-tokio",
     "macros",
     "postgres",
     "uuid",

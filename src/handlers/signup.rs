@@ -1,15 +1,43 @@
-use actix_web::{web, HttpResponse};
+use core::result::Result::{Err, Ok};
+
+use actix_web::{
+    http::{header::LOCATION, StatusCode},
+    web, HttpResponse, ResponseError,
+};
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
+use log::error;
 use maud::{html, Markup};
+use serde::Deserialize;
+use validator::{Validate, ValidationError, ValidationErrors};
 
 use crate::{
-    domain::{Role, User},
+    domain::Role,
     handlers::{footer, head, header},
+    utils::error_chain_fmt,
 };
 
-pub async fn signup_form(messages: IncomingFlashMessages) -> actix_web::Result<Markup> {
+#[derive(Debug)]
+struct SignupFormError {
+    err: anyhow::Error,
+}
+
+impl std::fmt::Display for SignupFormError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Signup failed")
+    }
+}
+
+impl ResponseError for SignupFormError {}
+
+impl From<anyhow::Error> for SignupFormError {
+    fn from(value: anyhow::Error) -> Self {
+        Self { err: value }
+    }
+}
+
+pub async fn signup_form(messages: IncomingFlashMessages) -> Markup {
     let msgs: Vec<_> = messages.iter().map(|f| f.content()).collect();
-    Ok(html! {
+    html! {
         (head("Sign Up"))
         (header())
         div class="content-container" {
@@ -45,50 +73,98 @@ pub async fn signup_form(messages: IncomingFlashMessages) -> actix_web::Result<M
             }
         }
         (footer())
-    })
+    }
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct Signup {
-    role: Role,
+    role: String,
     email: String,
     password: String,
     repeat_password: String,
 }
 
-pub async fn signup(signup: web::Form<Signup>) -> Result<HttpResponse, actix_web::Error> {
-    let Signup {
-        role,
-        email,
-        password,
-        repeat_password,
-    } = signup.0;
-    let mut valid_request = true;
-    if email.is_empty() {
-        valid_request = false;
-        FlashMessage::error("Email is mandatory").send();
+#[derive(thiserror::Error)]
+pub enum SignupError {
+    #[error("{0:?}")]
+    ValidationError(Vec<String>),
+    #[error(transparent)]
+    UnexpectedError(#[from] anyhow::Error),
+}
+
+impl From<ValidationErrors> for SignupError {
+    fn from(value: ValidationErrors) -> Self {
+        Self::ValidationError(
+            value
+                .field_errors()
+                .values()
+                .flat_map(|&f| f.iter().map(|e| e.to_owned()))
+                .map(|ve| ve.to_string())
+                .collect(),
+        )
     }
-    if password.is_empty() {
-        valid_request = false;
-        FlashMessage::error("Password is mandatory").send();
+}
+
+impl std::fmt::Debug for SignupError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        error_chain_fmt(self, f)
     }
-    if password != repeat_password {
-        valid_request = false;
-        FlashMessage::error("Password doesn't match repeated one").send();
+}
+
+impl ResponseError for SignupError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            SignupError::ValidationError(_) => StatusCode::BAD_REQUEST,
+            Self::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
     }
-    if !valid_request {
-        Ok(HttpResponse::SeeOther()
-            .insert_header(("Location", "/signups"))
-            .finish())
-    } else {
-        let u = User {
-            email,
-            password,
-            role,
-        };
-        log::info!("Fake user {:?} saving ...", u);
-        Ok(HttpResponse::SeeOther()
-            .insert_header(("Location", "/"))
-            .finish())
+
+    fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
+        match self {
+            Self::UnexpectedError(_error) => HttpResponse::SeeOther()
+                .insert_header((LOCATION, "/signups"))
+                .finish(),
+            Self::ValidationError(errors) => {
+                for err in errors {
+                    FlashMessage::error(err).send()
+                }
+                HttpResponse::SeeOther()
+                    .insert_header((LOCATION, "/signups"))
+                    .finish()
+            }
+        }
     }
+}
+
+#[derive(Debug, Validate, Deserialize)]
+struct NewSignup {
+    #[validate(custom = "validate_role")]
+    role: String,
+    #[validate(email(message = "Invalid email"))]
+    email: String,
+    #[validate(length(min = 8, message = "Password must be at least 8 chars long"))]
+    password: String,
+    #[validate(must_match(other = "password", message = "Passwrod must match repeated password"))]
+    repeat_password: String,
+}
+
+fn validate_role(role: &str) -> Result<(), ValidationError> {
+    let role: Result<Role, String> = role.to_owned().try_into();
+    match role {
+        Ok(_) => Ok(()),
+        Err(_) => Err(ValidationError::new("Invalid role")),
+    }
+}
+
+pub async fn signup(signup: web::Form<Signup>) -> Result<HttpResponse, SignupError> {
+    let new_signup = NewSignup {
+        email: signup.email.clone(),
+        password: signup.password.clone(),
+        repeat_password: signup.repeat_password.clone(),
+        role: signup.role.clone(),
+    };
+    new_signup.validate()?;
+    Ok(HttpResponse::SeeOther()
+        .insert_header(("Location", "/"))
+        .finish())
 }

@@ -29,11 +29,9 @@ async fn main() -> AnyhowResult {
         .await
         .expect("Should have applied migrations");
 
-    let application = Application::build(settings.clone()).await?;
-    application
-        .run_until_stopped()
-        .await
-        .expect("Could not start server");
-
+    Application::build_and_run(settings.clone())
+        .await?
+        .server
+        .await?;
     Ok(())
 }

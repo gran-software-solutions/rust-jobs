@@ -9,6 +9,18 @@ pub enum Role {
     Employer,
     Dev,
 }
+
+impl TryFrom<String> for Role {
+    type Error = String;
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_str() {
+            "Employer" => Ok(Role::Employer),
+            "Dev" => Ok(Role::Dev),
+            _ => Err(format!("Value {} is not a valid role", value)),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum Job {
     Permanent(PermanentJob),

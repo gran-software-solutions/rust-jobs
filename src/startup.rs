@@ -18,67 +18,56 @@ use sqlx::{postgres::PgPoolOptions, PgPool};
 use crate::{
     authentication::reject_anonymous_users,
     configuration::{DatabaseSettings, Settings},
+    database::Database,
     handlers::{homepage, job_details, job_search, signup, signup_form},
     monitoring::{liveness, readiness},
 };
 
 pub struct Application {
-    port: u16,
-    server: Server,
+    pub server: Server,
 }
 
 impl Application {
-    pub async fn build(settings: Settings) -> Result<Self, anyhow::Error> {
+    pub async fn build_and_run(settings: Settings) -> Result<Self, anyhow::Error> {
         let connection_pool = get_connection_pool(&settings.database);
         let address = format!(
             "{}:{}",
             settings.application.host, settings.application.port
         );
         let listener = TcpListener::bind(address)?;
-        let port = listener.local_addr().unwrap().port();
-        let server = run(
+        let server = run_server(
             listener,
             connection_pool,
-            settings.application.base_url,
             settings.application.hmac_secret,
             settings.redis_uri,
         )
         .await?;
-        Ok(Self { port, server })
-    }
-    pub fn port(&self) -> u16 {
-        self.port
-    }
-    pub async fn run_until_stopped(self) -> Result<(), std::io::Error> {
-        self.server.await
+        Ok(Self { server })
     }
 }
 
-pub struct ApplicationBaseUrl(pub String);
-
-async fn run(
+async fn run_server(
     listener: TcpListener,
     db_pool: PgPool,
-    base_url: String,
     hmac_secret: Secret<String>,
     redis_uri: Secret<String>,
-) -> Result<Server, anyhow::Error> {
+) -> anyhow::Result<Server> {
     let db_pool = Data::new(db_pool);
-    let base_url = Data::new(ApplicationBaseUrl(base_url));
     let secret_key = Key::from(hmac_secret.expose_secret().as_bytes());
     let message_store = CookieMessageStore::builder(secret_key.clone()).build();
     let message_framework = FlashMessagesFramework::builder(message_store).build();
     let redis_store = RedisSessionStore::new(redis_uri.expose_secret()).await?;
+    let database = Data::new(Database::new());
     let server = HttpServer::new(move || {
         App::new()
+            .app_data(Data::new(HmacSecret(hmac_secret.clone())))
+            .app_data(database.clone())
+            .app_data(db_pool.clone())
             .wrap(message_framework.clone())
             .wrap(SessionMiddleware::new(
                 redis_store.clone(),
                 secret_key.clone(),
             ))
-            .app_data(Data::new(HmacSecret(hmac_secret.clone())))
-            .app_data(db_pool.clone())
-            .app_data(base_url.clone())
             .wrap(middleware::NormalizePath::trim())
             .service(Files::new("/static", "./static/root"))
             .service(web::scope("/probe").service(liveness).service(readiness))

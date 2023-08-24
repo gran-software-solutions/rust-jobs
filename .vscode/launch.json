@@ -8,6 +8,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug executable 'rust-jobs'",
+            "env": {
+                "RUST_LOG": "debug",
+            },
             "cargo": {
                 "args": [
                     "build",
@@ -17,7 +20,7 @@
                 "filter": {
                     "name": "rust-jobs",
                     "kind": "bin"
-                }
+                },
             },
             "args": [],
             "cwd": "${workspaceFolder}"

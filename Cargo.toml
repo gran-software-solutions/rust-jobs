@@ -40,3 +40,5 @@ sqlx = { version = "0.7.1", default-features = false, features = [
 ] }
 
 validator = { version = "0.16.1", features = ["derive"] }
+argon2 = { version = "0.5.1", features = ["std"] }
+rand = { version = "0.8.5", features = ["std_rng"] }

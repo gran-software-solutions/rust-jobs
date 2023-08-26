@@ -18,13 +18,13 @@ type AnyhowResult = anyhow::Result<()>;
 async fn main() -> AnyhowResult {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
     let settings = get_settings().expect("Could not load config");
-    let pg_connect_options = settings.database.without_db();
+    let pg_connect_options = settings.database.with_db();
     let pool = PgPool::connect_with(pg_connect_options)
         .await
-        .expect("TODO");
+        .expect("Could not obtain connection to run the migrations");
 
-    let migration_result = sqlx::migrate!("./migrations");
-    migration_result
+    let migrator = sqlx::migrate!();
+    migrator
         .run(&pool)
         .await
         .expect("Should have applied migrations");

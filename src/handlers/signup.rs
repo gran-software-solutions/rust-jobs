@@ -1,19 +1,26 @@
 use core::result::Result::{Err, Ok};
+use std::ops::Deref;
 
 use actix_web::{
     http::{header::LOCATION, StatusCode},
+    rt::task::spawn_blocking,
     web, HttpResponse, ResponseError,
 };
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
-use log::error;
+use anyhow::Context;
+use log::{error, info};
 use maud::{html, Markup};
 use serde::Deserialize;
+use sqlx::{PgPool, Postgres, Transaction};
+
+use uuid::Uuid;
 use validator::{Validate, ValidationError, ValidationErrors};
 
 use crate::{
+    authentication,
     domain::Role,
     handlers::{footer, head, header},
-    utils::error_chain_fmt,
+    utils::{error_chain_fmt, see_other},
 };
 
 #[derive(Debug)]
@@ -156,7 +163,10 @@ fn validate_role(role: &str) -> Result<(), ValidationError> {
     }
 }
 
-pub async fn signup(signup: web::Form<Signup>) -> Result<HttpResponse, SignupError> {
+pub async fn signup(
+    signup: web::Form<Signup>,
+    pool: web::Data<PgPool>,
+) -> Result<HttpResponse, SignupError> {
     let new_signup = NewSignup {
         email: signup.email.clone(),
         password: signup.password.clone(),
@@ -164,7 +174,43 @@ pub async fn signup(signup: web::Form<Signup>) -> Result<HttpResponse, SignupErr
         role: signup.role.clone(),
     };
     new_signup.validate()?;
-    Ok(HttpResponse::SeeOther()
-        .insert_header(("Location", "/"))
-        .finish())
+
+    let mut transaction = pool
+        .begin()
+        .await
+        .context("Failed to acquire a Postgres connection from the pool")?;
+
+    let _user = save_user(&mut transaction, new_signup)
+        .await
+        .context("Could not save user")?;
+
+    transaction
+        .commit()
+        .await
+        .context("Could not commit transaction")?;
+    Ok(see_other("/"))
+}
+
+async fn save_user(
+    transaction: &mut Transaction<'static, Postgres>,
+    new_signup: NewSignup,
+) -> Result<Uuid, anyhow::Error> {
+    let user_id = uuid::Uuid::new_v4();
+    let password = new_signup.password.clone();
+    let hash = spawn_blocking(move || authentication::compute_password_hash(password))
+        .await
+        .context("Could not compute hash")??;
+    let email = new_signup.email.clone();
+    sqlx::query!(
+        r#"
+        INSERT INTO users(user_id, role, email, password_hash) VALUES ($1, $2, $3, $4)
+        "#,
+        user_id,
+        new_signup.role,
+        email,
+        hash,
+    )
+    .execute(&mut **transaction)
+    .await?;
+    Ok(user_id)
 }

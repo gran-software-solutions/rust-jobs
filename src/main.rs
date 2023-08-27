@@ -2,6 +2,7 @@ mod authentication;
 mod configuration;
 mod database;
 mod domain;
+mod email;
 mod handlers;
 mod monitoring;
 mod session_state;

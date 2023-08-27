@@ -10,6 +10,7 @@ use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
 use anyhow::Context;
 use log::{error, info};
 use maud::{html, Markup};
+use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use serde::Deserialize;
 use sqlx::{PgPool, Postgres, Transaction};
 
@@ -19,6 +20,7 @@ use validator::{Validate, ValidationError, ValidationErrors};
 use crate::{
     authentication,
     domain::Role,
+    email,
     handlers::{footer, head, header},
     utils::{error_chain_fmt, see_other},
 };
@@ -180,15 +182,49 @@ pub async fn signup(
         .await
         .context("Failed to acquire a Postgres connection from the pool")?;
 
-    let _user = save_user(&mut transaction, new_signup)
+    let user_id = save_user(&mut transaction, new_signup)
         .await
         .context("Could not save user")?;
+
+    let confirmation_token = generate_confirmation_token();
+
+    store_token(&mut transaction, user_id, &confirmation_token)
+        .await
+        .context("Unable to save confirmation token")?;
 
     transaction
         .commit()
         .await
         .context("Could not commit transaction")?;
+
+    email::send_user_confirmation_email().await;
+
     Ok(see_other("/"))
+}
+
+fn generate_confirmation_token() -> String {
+    let mut rng: rand::rngs::ThreadRng = thread_rng();
+    std::iter::repeat_with(|| rng.sample(Alphanumeric))
+        .map(char::from)
+        .take(25)
+        .collect()
+}
+
+async fn store_token(
+    transaction: &mut Transaction<'static, Postgres>,
+    user_id: Uuid,
+    token: &String,
+) -> Result<(), anyhow::Error> {
+    sqlx::query!(
+        r#"
+        INSERT INTO confirmation_tokens (confirmation_token, user_id) VALUES ($1, $2)
+        "#,
+        token,
+        user_id
+    )
+    .execute(&mut **transaction)
+    .await?;
+    Ok(())
 }
 
 async fn save_user(
@@ -203,7 +239,7 @@ async fn save_user(
     let email = new_signup.email.clone();
     sqlx::query!(
         r#"
-        INSERT INTO users(user_id, role, email, password_hash) VALUES ($1, $2, $3, $4)
+        INSERT INTO users(id, role, email, password_hash) VALUES ($1, $2, $3, $4)
         "#,
         user_id,
         new_signup.role,

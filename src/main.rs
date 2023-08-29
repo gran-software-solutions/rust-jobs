@@ -14,10 +14,12 @@ use configuration::get_settings;
 use env_logger::Env;
 use sqlx::PgPool;
 type AnyhowResult = anyhow::Result<()>;
+use dotenvy::dotenv;
 
 #[actix_web::main]
 async fn main() -> AnyhowResult {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
+    dotenv().ok();
     let settings = get_settings().expect("Could not load config");
     let pg_connect_options = settings.database.with_db();
     let pool = PgPool::connect_with(pg_connect_options)

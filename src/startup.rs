@@ -35,13 +35,7 @@ impl Application {
             settings.application.host, settings.application.port
         );
         let listener = TcpListener::bind(address)?;
-        let server = run_server(
-            listener,
-            connection_pool,
-            settings.application.hmac_secret,
-            settings.redis_uri,
-        )
-        .await?;
+        let server = run_server(listener, connection_pool, settings).await?;
         Ok(Self { server })
     }
 }
@@ -49,19 +43,22 @@ impl Application {
 async fn run_server(
     listener: TcpListener,
     db_pool: PgPool,
-    hmac_secret: Secret<String>,
-    redis_uri: Secret<String>,
+    settings: Settings,
 ) -> anyhow::Result<Server> {
     let db_pool = Data::new(db_pool);
-    let secret_key = Key::from(hmac_secret.expose_secret().as_bytes());
+    let secret_key = Key::from(settings.application.hmac_secret.expose_secret().as_bytes());
     let message_store = CookieMessageStore::builder(secret_key.clone()).build();
     let message_framework = FlashMessagesFramework::builder(message_store).build();
-    let redis_store = RedisSessionStore::new(redis_uri.expose_secret()).await?;
+    let redis_store = RedisSessionStore::new(settings.redis_uri.expose_secret()).await?;
     let database = Data::new(Database::new());
+    let gmail = Data::new(settings.gmail);
     let server = HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(HmacSecret(hmac_secret.clone())))
+            .app_data(Data::new(HmacSecret(
+                settings.application.hmac_secret.clone(),
+            )))
             .app_data(database.clone())
+            .app_data(gmail.clone())
             .app_data(db_pool.clone())
             .wrap(message_framework.clone())
             .wrap(SessionMiddleware::new(

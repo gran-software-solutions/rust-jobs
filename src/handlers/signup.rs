@@ -1,5 +1,4 @@
 use core::result::Result::{Err, Ok};
-use std::ops::Deref;
 
 use actix_web::{
     http::{header::LOCATION, StatusCode},
@@ -8,7 +7,7 @@ use actix_web::{
 };
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
 use anyhow::Context;
-use log::{error, info};
+use log::error;
 use maud::{html, Markup};
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use serde::Deserialize;
@@ -19,8 +18,9 @@ use validator::{Validate, ValidationError, ValidationErrors};
 
 use crate::{
     authentication,
+    configuration::Gmail,
     domain::Role,
-    email,
+    email::{self},
     handlers::{footer, head, header},
     utils::{error_chain_fmt, see_other},
 };
@@ -168,6 +168,7 @@ fn validate_role(role: &str) -> Result<(), ValidationError> {
 pub async fn signup(
     signup: web::Form<Signup>,
     pool: web::Data<PgPool>,
+    gmail: web::Data<Gmail>,
 ) -> Result<HttpResponse, SignupError> {
     let new_signup = NewSignup {
         email: signup.email.clone(),
@@ -197,7 +198,15 @@ pub async fn signup(
         .await
         .context("Could not commit transaction")?;
 
-    email::send_user_confirmation_email().await;
+    if let Err(e) = email::send_user_confirmation_email(
+        signup.email.as_str(),
+        &gmail.send_from_email,
+        &gmail.service_account_file_full_path,
+    )
+    .await
+    {
+        log::error!("Error sending registration confirmation mail: {}", e);
+    };
 
     Ok(see_other("/"))
 }

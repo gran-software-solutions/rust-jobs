@@ -8,6 +8,13 @@ pub struct Settings {
     pub application: ApplicationSettings,
     pub database: DatabaseSettings,
     pub redis_uri: Secret<String>,
+    pub gmail: Gmail,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct Gmail {
+    pub service_account_file_full_path: String,
+    pub send_from_email: String,
 }
 
 #[derive(Deserialize, Clone)]
@@ -31,7 +38,7 @@ impl DatabaseSettings {
         PgConnectOptions::new()
             .host(&self.host)
             .username(&self.username)
-            .password(&self.password.expose_secret())
+            .password(self.password.expose_secret())
             .port(self.port)
             .ssl_mode(ssl_mode)
     }

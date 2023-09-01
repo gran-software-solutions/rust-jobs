@@ -1,6 +1,8 @@
 use actix_web::{web, HttpResponse};
 use actix_web_flash_messages::IncomingFlashMessages;
 use maud::html;
+use serde::Deserialize;
+use validator::{Validate, ValidationErrors};
 
 use crate::{
     handlers::{footer, head, header},
@@ -41,16 +43,24 @@ pub async fn sign_in_view(messages: IncomingFlashMessages) -> HttpResponse {
     HttpResponse::Ok().body(pre_escaped.into_string())
 }
 
-struct Credentials {
-    username: String,
+#[derive(Debug, Validate, Deserialize)]
+struct NewSignIn {
+    #[validate(email(message = "Invalid email"))]
+    email: String,
+    #[validate(length(min = 8, message = "Password must be at least 8 chars long"))]
     password: String,
 }
 
-impl TryFrom<SignInForm> for Credentials {
-    type Error = Vec<String>;
+impl TryFrom<SignInForm> for NewSignIn {
+    type Error = ValidationErrors;
 
     fn try_from(value: SignInForm) -> Result<Self, Self::Error> {
-        todo!()
+        let new_sign_in = NewSignIn {
+            email: value.username,
+            password: value.password,
+        };
+        new_sign_in.validate()?;
+        Ok(new_sign_in)
     }
 }
 
@@ -60,6 +70,24 @@ pub struct SignInForm {
     password: String,
 }
 pub async fn signin(form: web::Form<SignInForm>) -> HttpResponse {
-    let maybe_credentials = form.0.try_into();
-    see_other("/")
+    let new_sign_in: Result<NewSignIn, ValidationErrors> = form.0.try_into();
+    let new_sign_in = match new_sign_in {
+        Ok(n) => n,
+        Err(_errors) => return see_other("/siginin"),
+    };
+    match validate_credentials(new_sign_in).await {
+        Ok(()) => {
+            //  TODO:
+            see_other("/")
+        }
+        Err(e) => {
+            // TODO:
+            see_other("/signin")
+        }
+    }
+}
+
+async fn validate_credentials(n: NewSignIn) -> Result<(), anyhow::Error> {
+    // TODO:
+    Result::Ok(())
 }

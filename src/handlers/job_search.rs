@@ -6,6 +6,7 @@ use crate::{
     database::Database,
     domain::{FreelanceJob, Job, PermanentJob},
     handlers::{footer, head, header},
+    session_state::TypedSession,
 };
 
 pub struct SearchResultJob {
@@ -78,6 +79,7 @@ pub struct JobSearch {}
 pub async fn job_search(
     db: web::Data<Database>,
     _search: web::Query<JobSearch>,
+    session: TypedSession,
 ) -> actix_web::Result<Markup> {
     let jobs: Vec<SearchResultJob> = db
         .get_jobs(None)
@@ -86,7 +88,7 @@ pub async fn job_search(
         .collect();
     Ok(html! {
         (head("Search Jobs Page"))
-        (header())
+        (header(session.get_user_id().unwrap().is_some()))
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {

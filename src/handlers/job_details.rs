@@ -6,6 +6,7 @@ use crate::{
     database::Database,
     domain::{FreelanceJob, Job, PermanentJob},
     handlers::{footer, head, header},
+    session_state::TypedSession,
 };
 
 use super::not_found;
@@ -71,10 +72,10 @@ impl From<&Job> for SearchResultJob {
     }
 }
 
-fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
+fn render_freelance_job(freelance_job: &FreelanceJob, session: TypedSession) -> Markup {
     html! {
         (head("Freelance Job details"))
-        (header())
+        (header(session.get_user_id().unwrap().is_some()))
         h1 { "Freelance Job: " (freelance_job.title) }
         table class="pure-table pure-table-horizontal centered-table" {
             tr {
@@ -137,10 +138,10 @@ fn render_freelance_job(freelance_job: &FreelanceJob) -> Markup {
         (footer())
     }
 }
-fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
+fn render_permanent_job(permanent_job: &PermanentJob, session: TypedSession) -> Markup {
     html! {
         (head("Permanent Job details"))
-        (header())
+        (header(session.get_user_id().unwrap().is_some()))
         h1 { "Permanent Job: " (permanent_job.title) }
         table class="pure-table pure-table-horizontal centered-table" {
             tr {
@@ -207,11 +208,12 @@ fn render_permanent_job(permanent_job: &PermanentJob) -> Markup {
 pub async fn job_details(
     db: web::Data<Database>,
     id: web::Path<Uuid>,
+    session: TypedSession,
 ) -> actix_web::Result<Markup> {
     let job_id: Uuid = id.into_inner();
     match db.get_job(job_id) {
-        Some(Job::Freelance(f)) => Ok(render_freelance_job(f)),
-        Some(Job::Permanent(p)) => Ok(render_permanent_job(p)),
-        None => Ok(not_found("We couldn't find such job! ")),
+        Some(Job::Freelance(f)) => Ok(render_freelance_job(f, session)),
+        Some(Job::Permanent(p)) => Ok(render_permanent_job(p, session)),
+        None => Ok(not_found("We couldn't find such job!", session)),
     }
 }

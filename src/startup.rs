@@ -19,7 +19,9 @@ use crate::{
     authentication::reject_anonymous_users,
     configuration::{DatabaseSettings, Settings},
     database::Database,
-    handlers::{homepage, job_details, job_search, sign_in_view, signin, signup, signup_form},
+    handlers::{
+        homepage, job_details, job_search, sign_in_view, signin, signout, signup, signup_form,
+    },
     monitoring::{liveness, readiness},
 };
 
@@ -71,16 +73,17 @@ async fn run_server(
             .route("/", web::get().to(homepage))
             .route("/jobs/search", web::get().to(job_search))
             .route("/jobs/{id}", web::get().to(job_details))
-            .route("/signups", web::get().to(signup_form))
+            .route("/signup", web::get().to(signup_form))
             .route(
                 "/protected",
                 web::get()
                     .to(|| async { HttpResponse::Ok().body("protected") })
                     .wrap(from_fn(reject_anonymous_users)),
             )
-            .route("/signups", web::post().to(signup))
+            .route("/signup", web::post().to(signup))
             .route("/signin", web::get().to(sign_in_view))
             .route("/signin", web::post().to(signin))
+            .route("/signout", web::get().to(signout))
     })
     .listen(listener)?
     .run();

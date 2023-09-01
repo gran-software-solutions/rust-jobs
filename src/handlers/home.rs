@@ -6,6 +6,7 @@ use crate::{
     database::Database,
     domain::{FreelanceJob, Job, PermanentJob},
     handlers::{footer, head, header},
+    session_state::TypedSession,
 };
 
 pub struct HomepageJob {
@@ -74,7 +75,7 @@ impl From<&Job> for HomepageJob {
 
 const JOBS_COUNT_ON_HOMEPAGE: usize = 5;
 
-pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
+pub async fn homepage(db: web::Data<Database>, session: TypedSession) -> actix_web::Result<Markup> {
     let jobs_count = db.get_jobs_count();
     let jobs: Vec<HomepageJob> = db
         .get_jobs(Some(JOBS_COUNT_ON_HOMEPAGE))
@@ -83,7 +84,7 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
         .collect();
     Ok(html! {
         (head("Homepage"))
-        (header())
+        (header(session.get_user_id().unwrap().is_some()))
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {
@@ -145,7 +146,7 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
                         p {
                             "Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum."
                         }
-                        a href="/signups" class="signup-button" {
+                        a href="/signup" class="signup-button" {
                             "Post A Job Today As Employer"
                         }
                     }
@@ -157,7 +158,7 @@ pub async fn homepage(db: web::Data<Database>) -> actix_web::Result<Markup> {
                         p {
                             "Integer scelerisque libero sit amet ligula sagittis, nec laoreet elit fermentum."
                         }
-                        a href="/signups" class="signup-button" {
+                        a href="/signup" class="signup-button" {
                             "Sign Up As A Rust Developer"
                         }
                     }

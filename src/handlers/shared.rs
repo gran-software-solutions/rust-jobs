@@ -1,6 +1,8 @@
 use maud::{html, Markup, DOCTYPE};
 
-pub fn header() -> Markup {
+use crate::session_state::TypedSession;
+
+pub fn header(is_logged_in: bool) -> Markup {
     html! {
         header class="header" {
             div class="pure-g" {
@@ -14,14 +16,22 @@ pub fn header() -> Markup {
                 }
                 div class="pure-u-2-3 header-links" {
                     ul class="pure-menu pure-menu-horizontal pure-menu-right" {
-                        li class="pure-menu-item" {
-                            a href="#" class="pure-menu-link" {
-                                "Sign Up"
+                        @if is_logged_in {
+                            li class="pure-menu-item" {
+                                a href="/signout" class="pure-menu-link" {
+                                    "Sign Out"
+                                }
                             }
-                        }
-                        li class="pure-menu-item" {
-                            a href="/signin" class="pure-menu-link" {
-                                "Sign In"
+                        } @else {
+                            li class="pure-menu-item" {
+                                a href="#" class="pure-menu-link" {
+                                    "Sign Up"
+                                }
+                            }
+                            li class="pure-menu-item" {
+                                a href="/signin" class="pure-menu-link" {
+                                    "Sign In"
+                                }
                             }
                         }
                     }
@@ -62,10 +72,10 @@ pub fn footer() -> Markup {
     }
 }
 
-pub fn not_found(msg: &str) -> Markup {
+pub fn not_found(msg: &str, session: TypedSession) -> Markup {
     html! {
         (head("Oooops! 404"))
-            (header())
+        (header(session.get_user_id().unwrap().is_some()))
             h1 { (msg)}
             div class="centered-link" {
                 a href="/" {

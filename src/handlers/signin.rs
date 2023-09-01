@@ -26,11 +26,11 @@ pub enum AuthError {
     UnexpectedError(#[from] anyhow::Error),
 }
 
-pub async fn sign_in_view(messages: IncomingFlashMessages) -> HttpResponse {
+pub async fn sign_in_view(messages: IncomingFlashMessages, session: TypedSession) -> HttpResponse {
     let msgs: Vec<_> = messages.iter().map(|f| f.content()).collect();
     let pre_escaped = html! {
         (head("Sign In"))
-        (header())
+        (header(session.get_user_id().unwrap().is_some()))
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {
@@ -101,11 +101,9 @@ pub async fn signin(
                 .flat_map(|&f| f.iter().map(|e| e.to_owned()))
                 .map(|ve| ve.to_string())
                 .for_each(|e| FlashMessage::error(e).send());
-            return see_other("/siginin");
+            return see_other("/signin");
         }
     };
-
-    info!("New sign in credentials look ok, proceeding...");
 
     match get_current_user_details(&pool, new_sign_in.email).await {
         Ok(d) if d.is_some() => {
@@ -130,26 +128,25 @@ pub async fn signin(
                     session
                         .insert_role(&role)
                         .expect("Could not insert role into session");
-                    return see_other("/");
+                    see_other("/")
                 }
                 Err(e) => {
                     log::error!("Invalid auth {}", e);
-                    return see_other("/login");
+                    see_other("/login")
                 }
             }
         }
         Ok(_) => {
             log::error!("No such credentials!");
             FlashMessage::error("Invalid credentials").send();
-            return see_other("/login");
+            see_other("/login")
         }
         Err(e) => {
             log::error!("Server error occurred: {}", e);
             FlashMessage::error("Ooops. It's not You, it's us! Try again later!").send();
-            return see_other("/login");
+            see_other("/login")
         }
-    };
-    see_other("/")
+    }
 }
 
 async fn get_current_user_details(

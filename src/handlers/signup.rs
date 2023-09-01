@@ -22,6 +22,7 @@ use crate::{
     domain::Role,
     email::{self},
     handlers::{footer, head, header},
+    session_state::TypedSession,
     utils::{error_chain_fmt, see_other},
 };
 
@@ -44,11 +45,11 @@ impl From<anyhow::Error> for SignupFormError {
     }
 }
 
-pub async fn signup_form(messages: IncomingFlashMessages) -> Markup {
+pub async fn signup_form(messages: IncomingFlashMessages, session: TypedSession) -> Markup {
     let msgs: Vec<_> = messages.iter().map(|f| f.content()).collect();
     html! {
         (head("Sign Up"))
-        (header())
+        (header(session.get_user_id().unwrap().is_some()))
         div class="content-container" {
             div class="content" {
                 h1 class="centered-text job-count-text" {
@@ -62,7 +63,7 @@ pub async fn signup_form(messages: IncomingFlashMessages) -> Markup {
                     }
                 }
                 div {
-                    form method="POST" action="/signups" class="pure-form pure-form-stacked" {
+                    form method="POST" action="/signup" class="pure-form pure-form-stacked" {
                         legend { "Sign Up" }
                         label for="employer-cb" class="pure-radio" {
                             input type="radio" id="employer-cb" name="role" value="Employer" checked="" { "Employer "}
@@ -131,14 +132,14 @@ impl ResponseError for SignupError {
     fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
         match self {
             Self::UnexpectedError(_error) => HttpResponse::SeeOther()
-                .insert_header((LOCATION, "/signups"))
+                .insert_header((LOCATION, "/signup"))
                 .finish(),
             Self::ValidationError(errors) => {
                 for err in errors {
                     FlashMessage::error(err).send()
                 }
                 HttpResponse::SeeOther()
-                    .insert_header((LOCATION, "/signups"))
+                    .insert_header((LOCATION, "/signup"))
                     .finish()
             }
         }

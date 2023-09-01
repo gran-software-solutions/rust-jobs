@@ -7,7 +7,7 @@ use actix_web::{
     dev::Server,
     middleware,
     web::{self, Data},
-    App, HttpServer,
+    App, HttpResponse, HttpServer,
 };
 use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
 use actix_web_lab::middleware::from_fn;
@@ -19,7 +19,7 @@ use crate::{
     authentication::reject_anonymous_users,
     configuration::{DatabaseSettings, Settings},
     database::Database,
-    handlers::{homepage, job_details, job_search, signup, signup_form},
+    handlers::{homepage, job_details, job_search, sign_in_view, signup, signup_form},
     monitoring::{liveness, readiness},
 };
 
@@ -70,14 +70,16 @@ async fn run_server(
             .service(web::scope("/probe").service(liveness).service(readiness))
             .route("/", web::get().to(homepage))
             .route("/jobs/search", web::get().to(job_search))
-            .route(
-                "/jobs/{id}",
-                web::get()
-                    .wrap(from_fn(reject_anonymous_users))
-                    .to(job_details),
-            )
+            .route("/jobs/{id}", web::get().to(job_details))
             .route("/signups", web::get().to(signup_form))
+            .route(
+                "/protected",
+                web::get()
+                    .to(|| async { HttpResponse::Ok().body("protected") })
+                    .wrap(from_fn(reject_anonymous_users)),
+            )
             .route("/signups", web::post().to(signup))
+            .route("/signin", web::get().to(sign_in_view))
     })
     .listen(listener)?
     .run();

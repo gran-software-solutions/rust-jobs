@@ -1,5 +1,5 @@
 use actix_web::{web, HttpResponse};
-use actix_web_flash_messages::IncomingFlashMessages;
+use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
 use maud::html;
 use serde::Deserialize;
 use validator::{Validate, ValidationErrors};
@@ -73,7 +73,15 @@ pub async fn signin(form: web::Form<SignInForm>) -> HttpResponse {
     let new_sign_in: Result<NewSignIn, ValidationErrors> = form.0.try_into();
     let new_sign_in = match new_sign_in {
         Ok(n) => n,
-        Err(_errors) => return see_other("/siginin"),
+        Err(_errors) => {
+            _errors
+                .field_errors()
+                .values()
+                .flat_map(|&f| f.iter().map(|e| e.to_owned()))
+                .map(|ve| ve.to_string())
+                .for_each(|e| FlashMessage::error(e).send());
+            return see_other("/siginin");
+        }
     };
     match validate_credentials(new_sign_in).await {
         Ok(()) => {

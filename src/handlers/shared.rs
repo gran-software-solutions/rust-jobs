@@ -20,8 +20,8 @@ pub fn header() -> Markup {
                             }
                         }
                         li class="pure-menu-item" {
-                            a href="#" class="pure-menu-link" {
-                                "Login"
+                            a href="/signin" class="pure-menu-link" {
+                                "Sign In"
                             }
                         }
                     }

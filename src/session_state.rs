@@ -4,10 +4,13 @@ use actix_session::{Session, SessionExt, SessionGetError, SessionInsertError};
 use actix_web::FromRequest;
 use uuid::Uuid;
 
+use crate::domain::Role;
+
 pub struct TypedSession(Session);
 
 impl TypedSession {
     const USER_ID_KEY: &'static str = "user_id";
+    const ROLE: &'static str = "role";
 
     pub fn renew(&self) {
         self.0.renew();
@@ -15,6 +18,10 @@ impl TypedSession {
 
     pub fn insert_user_id(&self, user_id: Uuid) -> Result<(), SessionInsertError> {
         self.0.insert(Self::USER_ID_KEY, user_id)
+    }
+
+    pub fn insert_role(&self, role: &str) -> Result<(), SessionInsertError> {
+        self.0.insert(Self::ROLE, role)
     }
 
     pub fn get_user_id(&self) -> Result<Option<Uuid>, SessionGetError> {
@@ -32,7 +39,7 @@ impl FromRequest for TypedSession {
 
     fn from_request(
         req: &actix_web::HttpRequest,
-        payload: &mut actix_web::dev::Payload,
+        _payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
         ready(Ok(TypedSession(req.get_session())))
     }

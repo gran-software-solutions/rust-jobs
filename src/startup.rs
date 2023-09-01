@@ -19,7 +19,7 @@ use crate::{
     authentication::reject_anonymous_users,
     configuration::{DatabaseSettings, Settings},
     database::Database,
-    handlers::{homepage, job_details, job_search, sign_in_view, signup, signup_form},
+    handlers::{homepage, job_details, job_search, sign_in_view, signin, signup, signup_form},
     monitoring::{liveness, readiness},
 };
 
@@ -80,6 +80,7 @@ async fn run_server(
             )
             .route("/signups", web::post().to(signup))
             .route("/signin", web::get().to(sign_in_view))
+            .route("/signin", web::post().to(signin))
     })
     .listen(listener)?
     .run();

@@ -1,7 +1,7 @@
 use std::result;
 
 use actix_web::{rt::task::spawn_blocking, web, HttpResponse};
-use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
+use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages, Level};
 use anyhow::Context;
 use log::info;
 use maud::html;
@@ -12,7 +12,7 @@ use uuid::Uuid;
 use validator::{Validate, ValidationErrors};
 
 use crate::{
-    authentication::{compute_password_hash, verify_password_hash},
+    authentication::verify_password_hash,
     handlers::{footer, head, header},
     session_state::TypedSession,
     utils::see_other,
@@ -132,19 +132,20 @@ pub async fn signin(
                 }
                 Err(e) => {
                     log::error!("Invalid auth {}", e);
-                    see_other("/login")
+                    FlashMessage::new("Invalid credentials".into(), Level::Error).send();
+                    see_other("/signin")
                 }
             }
         }
         Ok(_) => {
             log::error!("No such credentials!");
             FlashMessage::error("Invalid credentials").send();
-            see_other("/login")
+            see_other("/signin")
         }
         Err(e) => {
             log::error!("Server error occurred: {}", e);
             FlashMessage::error("Ooops. It's not You, it's us! Try again later!").send();
-            see_other("/login")
+            see_other("/signin")
         }
     }
 }

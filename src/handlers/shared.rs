@@ -24,7 +24,7 @@ pub fn header(is_logged_in: bool) -> Markup {
                             }
                         } @else {
                             li class="pure-menu-item" {
-                                a href="#" class="pure-menu-link" {
+                                a href="/signup" class="pure-menu-link" {
                                     "Sign Up"
                                 }
                             }

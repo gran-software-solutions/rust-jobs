@@ -1,9 +1,6 @@
-use std::result;
-
 use actix_web::{rt::task::spawn_blocking, web, HttpResponse};
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages, Level};
 use anyhow::Context;
-use log::info;
 use maud::html;
 use secrecy::Secret;
 use serde::Deserialize;
@@ -130,11 +127,18 @@ pub async fn signin(
                         .expect("Could not insert role into session");
                     see_other("/")
                 }
-                Err(e) => {
-                    log::error!("Invalid auth {}", e);
-                    FlashMessage::new("Invalid credentials".into(), Level::Error).send();
-                    see_other("/signin")
-                }
+                Err(e) => match e {
+                    AuthError::InvalidCredentials(e) => {
+                        log::error!("Invalid auth {}", e);
+                        FlashMessage::new("Invalid credentials".into(), Level::Error).send();
+                        see_other("/signin")
+                    }
+                    AuthError::UnexpectedError(e) => {
+                        log::error!("Error checking credentials {}", e);
+                        FlashMessage::new("Invalid credentials".into(), Level::Error).send();
+                        see_other("/signin")
+                    }
+                },
             }
         }
         Ok(_) => {

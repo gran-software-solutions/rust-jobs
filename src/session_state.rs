@@ -4,8 +4,6 @@ use actix_session::{Session, SessionExt, SessionGetError, SessionInsertError};
 use actix_web::FromRequest;
 use uuid::Uuid;
 
-use crate::domain::Role;
-
 pub struct TypedSession(Session);
 
 impl TypedSession {

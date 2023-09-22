@@ -241,7 +241,7 @@ async fn save_user(
     transaction: &mut Transaction<'static, Postgres>,
     new_signup: NewSignup,
 ) -> Result<Uuid, anyhow::Error> {
-    let user_id = uuid::Uuid::new_v4();
+    let user_id = Uuid::new_v4();
     let password = new_signup.password.clone();
     let hash = spawn_blocking(move || authentication::compute_password_hash(password))
         .await

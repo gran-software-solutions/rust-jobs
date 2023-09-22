@@ -154,7 +154,7 @@ struct NewSignup {
     email: String,
     #[validate(length(min = 8, message = "Password must be at least 8 chars long"))]
     password: String,
-    #[validate(must_match(other = "password", message = "Passwrod must match repeated password"))]
+    #[validate(must_match(other = "password", message = "Password must match repeated password"))]
     repeat_password: String,
 }
 
